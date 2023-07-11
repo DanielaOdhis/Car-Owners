@@ -21,11 +21,36 @@ const UploadForm = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  function convertToBase64(e) {
+    const reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = () => {
+      setCarData({
+        ...carData,
+        image: reader.result
+      });
+    };
+    reader.onerror = (error) => {
+      console.log('Error:', error);
+    };
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check if any required fields are empty
-    if (!carData.Car_Type || !carData.Location || !carData.Owner_Name || !carData.Owner_Email || !carData.Owner_Telephone || !carData.Charges_Per_Hour || !carData.Charges_Per_Day || !carData.Rental_Status || !carData.image) {
+    if (
+      !carData.Car_Type ||
+      !carData.Location ||
+      !carData.Owner_Name ||
+      !carData.Owner_Email ||
+      !carData.Owner_Telephone ||
+      !carData.Charges_Per_Hour ||
+      !carData.Charges_Per_Day ||
+      !carData.Rental_Status ||
+      !carData.image
+    ) {
       setErrorMessage('Please fill in all fields');
       return;
     }
@@ -56,8 +81,8 @@ const UploadForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="upload-form">
-        <h1>Car Uploads</h1>
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
+      <h1>Car Uploads</h1>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <div>
         <label>Car Type:</label>
         <input type="text" name="Car_Type" value={carData.Car_Type} onChange={handleChange} />
@@ -96,8 +121,10 @@ const UploadForm = () => {
       </div>
       <div>
         <label>Image:</label>
-        <input type="file" name="image" onChange={handleChange} />
+        <input type="file" name="image" onChange={convertToBase64} />
       </div>
+      {carData.image && <img src={carData.image} alt="Car" />} {/* Display the uploaded image */}
+      <br />
       <button type="submit">Upload</button>
     </form>
   );
