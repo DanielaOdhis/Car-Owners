@@ -3,76 +3,48 @@ import axios from 'axios';
 
 const UploadForm = () => {
   const [carData, setCarData] = useState({
-    Car_Type: '',
-    Location: '',
-    Owner_Name: '',
-    Owner_Email: '',
-    Owner_Telephone: '',
-    Charges_Per_Hour: '',
-    Charges_Per_Day: '',
-    Rental_Status: '',
-    image: ''
+    Car_Type: '', Location: '', Owner_Name: '', Owner_Email: '', Owner_Telephone: '', Charges_Per_Hour: '', Charges_Per_Day: '', Rental_Status: '',image: null,
   });
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (e) => {
-    setCarData({
-      ...carData,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (event) => {
+    if (event.target.name === 'image') {
+      setCarData({ ...carData, [event.target.name]: event.target.files[0] });
+    } else {
+      setCarData({ ...carData, [event.target.name]: event.target.value });
+    }
   };
-
-  function convertToBase64(e) {
-    const reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-      setCarData({
-        ...carData,
-        image: reader.result
-      });
-    };
-    reader.onerror = (error) => {
-      console.log('Error:', error);
-    };
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Check if any required fields are empty
     if (
-      !carData.Car_Type ||
-      !carData.Location ||
-      !carData.Owner_Name ||
-      !carData.Owner_Email ||
-      !carData.Owner_Telephone ||
-      !carData.Charges_Per_Hour ||
-      !carData.Charges_Per_Day ||
-      !carData.Rental_Status ||
-      !carData.image
+      !carData.Car_Type ||!carData.Location ||!carData.Owner_Name ||!carData.Owner_Email ||!carData.Owner_Telephone ||!carData.Charges_Per_Hour ||!carData.Charges_Per_Day ||!carData.Rental_Status ||!carData.image
     ) {
       setErrorMessage('Please fill in all fields');
       return;
     }
 
+    const formData = new FormData();
+    formData.append('Car_Type', carData.Car_Type);
+    formData.append('Location', carData.Location);
+    formData.append('Owner_Name', carData.Owner_Name);
+    formData.append('Owner_Email', carData.Owner_Email);
+    formData.append('Owner_Telephone', carData.Owner_Telephone);
+    formData.append('Charges_Per_Hour', carData.Charges_Per_Hour);
+    formData.append('Charges_Per_Day', carData.Charges_Per_Day);
+    formData.append('Rental_Status', carData.Rental_Status);
+    formData.append('image', carData.image);
+
     try {
-      const response = await axios.post('http://localhost:4001/uploadcars', carData);
-      console.log(response.data);
+      await axios.post('http://localhost:3004/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
       // Clear the form
       setCarData({
-        Car_Type: '',
-        Location: '',
-        Owner_Name: '',
-        Owner_Email: '',
-        Owner_Telephone: '',
-        Charges_Per_Hour: '',
-        Charges_Per_Day: '',
-        Rental_Status: '',
-        image: ''
+        Car_Type: '', Location: '', Owner_Name: '', Owner_Email: '', Owner_Telephone: '', Charges_Per_Hour: '',Charges_Per_Day: '',Rental_Status: '',image: null,
       });
 
-      // Reset the error message
       setErrorMessage('');
     } catch (error) {
       console.error(error);
@@ -121,9 +93,9 @@ const UploadForm = () => {
       </div>
       <div>
         <label>Image:</label>
-        <input type="file" name="image" onChange={convertToBase64} />
+        <input type="file" name="image" onChange={handleChange} />
       </div>
-      {carData.image && <img src={carData.image} alt="Car" />} {/* Display the uploaded image */}
+      {carData.image && <img src={URL.createObjectURL(carData.image)} alt="Car" />}
       <br />
       <button type="submit">Upload</button>
     </form>
