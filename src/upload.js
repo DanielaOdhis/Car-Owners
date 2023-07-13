@@ -6,6 +6,8 @@ const UploadForm = () => {
     Car_Type: '', Location: '', Owner_Name: '', Owner_Email: '', Owner_Telephone: '', Charges_Per_Hour: '', Charges_Per_Day: '', Rental_Status: '',image: null,
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleChange = (event) => {
     if (event.target.name === 'image') {
@@ -14,6 +16,16 @@ const UploadForm = () => {
       setCarData({ ...carData, [event.target.name]: event.target.value });
     }
   };
+  const handleUploadProgress = (progressEvent) => {
+    const percentCompleted = Math.round(
+      (progressEvent.loaded * 100) / progressEvent.total
+    );
+    setUploadProgress(percentCompleted);
+  };
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +49,10 @@ const UploadForm = () => {
 
     try {
       await axios.post('http://localhost:3004/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: handleUploadProgress,
       });
 
       // Clear the form
@@ -94,8 +109,27 @@ const UploadForm = () => {
       <div>
         <label>Image:</label>
         <input type="file" name="image" onChange={handleChange} />
-      </div>
-      {carData.image && <img src={URL.createObjectURL(carData.image)} alt="Car" />}
+      </div><br/>
+      {carData.image && (
+        <div>
+          <img
+            src={URL.createObjectURL(carData.image)}
+            alt="Car"
+            width={200}
+            height={150}
+            onLoad={handleImageLoad}
+          /><br />
+          {!imageLoaded && (
+            <div className="progress-bar">
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          )}
+        </div>
+      )}
+
       <br />
       <button type="submit">Upload</button>
     </form>
