@@ -63,3 +63,129 @@ label {
   background-color: #00a8ff;
   transition: width 0.3s ease-in-out;
 }
+.error{
+  color:red;
+}
+.signup-form,
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: 0 auto;
+  font-size: 16px;
+  margin-top: 50px;
+}
+.settings-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.settings-button button {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+
+.settings-button img {
+  width: 30px;
+  height: 30px;
+}
+.settings-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 1;
+}
+
+.settings-dropdown ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.settings-dropdown li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.settings-dropdown li:hover {
+  background-color: #f1f1f1;
+}
+button {
+  align-items: center;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+}
+
+button:hover {
+  background-color: tomato;
+}
+.delete-prompt {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+}
+.delete-prompt p {
+  margin-bottom: 10px;
+}
+
+.delete-prompt button {
+  margin-right: 10px;
+  background-color: black;
+  color: white;
+}
+
+.delete-prompt button:hover{
+  background-color: tomato;
+}
+.profile{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: 0 auto;
+  font-size: 16px;
+  margin-top: 50px;
+}
