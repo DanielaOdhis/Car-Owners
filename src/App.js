@@ -169,11 +169,13 @@ const App = () => {
                     car={selectedCar}
                     user={user}
                     onBackClick={handleBackClick}
+                    profileData={profileData}
                   />
                 ) : (
                   <OwnerCars
                     user={user}
                     onCarClick={handleCarClick}
+                    profileData={profileData}
                     onShowUploadForm={handleShowUploadForm}
                     showUploadForm={showUploadForm}
                   />

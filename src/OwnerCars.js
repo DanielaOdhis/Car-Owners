@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const OwnerCars = ({ user, onCarClick, onShowUploadForm, showUploadForm }) => {
+const OwnerCars = ({ user, profileData, onCarClick, onShowUploadForm, showUploadForm }) => {
   const [cars, setCars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchOwnerCars = async () => {
       try {
-        const response = await axios.get(`http://localhost:3004/api/cars`, {
+        const response = await axios.get(`http://localhost:3004/api/cars/${profileData.id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -25,7 +25,7 @@ const OwnerCars = ({ user, onCarClick, onShowUploadForm, showUploadForm }) => {
     };
 
     fetchOwnerCars();
-  }, []);
+  }, [profileData]);
 
   const bufferToBase64 = (buffer) => {
     if (!buffer || !buffer.data) {
@@ -58,6 +58,7 @@ const OwnerCars = ({ user, onCarClick, onShowUploadForm, showUploadForm }) => {
       <div className="grid-container">
         {cars.map((car, index) => (
           <div key={index} className="grid-item" onClick={() => onCarClick(car)}>
+            <h2>{car.Car_Type}</h2>
             <img src={bufferToBase64(car.image)} alt={car.Car_Type} />
             <p>Availability Status: {car.Rental_Status}</p>
             <p>Price per Hour: {car.Charges_Per_Hour}$</p>

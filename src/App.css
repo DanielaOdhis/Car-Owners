@@ -256,3 +256,23 @@ button {
 .grid-item:hover .selected-car-details {
   bottom: 0;
 }
+.update{
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+  text-align: center;
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: bottom 0.3s ease;
+  -webkit-transition: bottom 0.3s ease;
+  -moz-transition: bottom 0.3s ease;
+  -ms-transition: bottom 0.3s ease;
+  -o-transition: bottom 0.3s ease;
+}
+.update img{
+  width:300px;
+  height:200px;
+}
