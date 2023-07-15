@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import UploadForm from './upload.js';
+import axios from 'axios';
+import OwnerCars from './OwnerCars.js';
+import OwnerCarDetails from './OwnerCarDetails.js';
 import Login from './login.js';
 import Signup from './signup.js';
-import setting from './setting.png';
+import Setting from './setting.png';
 import Settings from './Settings.js';
 import Profile from './Profile.js';
+import UploadForm from './upload.js';
 import './App.css';
-import axios from 'axios';
 
 const App = () => {
   const [showLoginForm, setShowLoginForm] = useState(true);
@@ -15,9 +17,16 @@ const App = () => {
   const [profileData, setProfileData] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showProfilePage, setShowProfilePage] = useState(false);
+  const [showOwnerCars, setShowOwnerCars] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [showUploadForm, setShowUploadForm] = useState(false);
 
   const handleBackClick = () => {
+    setSelectedCar(null);
+    setShowOwnerCars(true);
     setShowProfilePage(false);
+    setShowSettings(false);
+    setShowUploadForm(false);
   };
 
   const handleSignup = async (formData) => {
@@ -27,8 +36,6 @@ const App = () => {
       setIsLoggedIn(true);
       setUser({ email: formData.email });
       console.log(formData);
-
-      await fetchProfileData(formData.email);
     } catch (error) {
       console.error('Error fetching user:', error);
     }
@@ -64,6 +71,8 @@ const App = () => {
 
   const onLogin = (email) => {
     console.log('User logged in:', email);
+    fetchProfileData(email); // Fetch profile data after login
+    setShowOwnerCars(true); // Show OwnerCars component after login
   };
 
   const handleLogout = () => {
@@ -71,6 +80,7 @@ const App = () => {
     setShowLoginForm(true);
     setUser(null);
     setProfileData(null);
+    setShowOwnerCars(false); // Hide OwnerCars component after logout
   };
 
   const handleDeleteAccount = () => {
@@ -91,6 +101,7 @@ const App = () => {
 
   const handleProfileClick = () => {
     setShowProfilePage(true);
+    setShowOwnerCars(false); // Hide OwnerCars component when viewing profile
   };
 
   const handleClickOutsideDropdown = (event) => {
@@ -106,6 +117,18 @@ const App = () => {
       document.removeEventListener('click', handleClickOutsideDropdown);
     };
   }, []);
+
+  const handleCarClick = (car) => {
+    setSelectedCar(car);
+    setShowProfilePage(false);
+    setShowUploadForm(false);
+  };
+
+  const handleShowUploadForm = () => {
+    setShowUploadForm(true);
+    setShowOwnerCars(false);
+    setSelectedCar(null);
+  };
 
   return (
     <div>
@@ -127,7 +150,7 @@ const App = () => {
             </p>
           </div>
         )
-      ): (
+      ) : (
         <div>
           {showProfilePage ? (
             <div>
@@ -140,10 +163,31 @@ const App = () => {
             </div>
           ) : (
             <div>
-              <UploadForm />
+              {showOwnerCars ? (
+                selectedCar ? (
+                  <OwnerCarDetails
+                    car={selectedCar}
+                    user={user}
+                    onBackClick={handleBackClick}
+                  />
+                ) : (
+                  <OwnerCars
+                    user={user}
+                    onCarClick={handleCarClick}
+                    onShowUploadForm={handleShowUploadForm}
+                    showUploadForm={showUploadForm}
+                  />
+                )
+              ) : (
+                <UploadForm
+                  user={user}
+                  fetchProfileData={fetchProfileData}
+                  onBackClick={handleBackClick}
+                />
+              )}
               <div className="settings-button" id="settings-button">
                 <button onClick={() => setShowSettings(!showSettings)}>
-                  <img src={setting} alt="Settings" />
+                  <img src={Setting} alt="Settings" />
                 </button>
                 {showSettings && (
                   <Settings
@@ -151,6 +195,7 @@ const App = () => {
                     onProfileClick={handleProfileClick}
                     onDeleteAccount={() => handleDeleteAccount(user.email)}
                     user={user}
+                    onUpload={() => setShowOwnerCars(false)}
                   />
                 )}
               </div>

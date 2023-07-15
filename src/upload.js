@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const UploadForm = () => {
+const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
   const [carData, setCarData] = useState({
-    Car_Type: '', Location: '', Owner_Name: '', Owner_Email: '', Owner_Telephone: '', Charges_Per_Hour: '', Charges_Per_Day: '', Rental_Status: '',image: null,
+    Car_Type: '',
+    Location: '',
+    Owner_ID: '',
+    Car_ID: '',
+    Charges_Per_Hour: '',
+    Charges_Per_Day: '',
+    Rental_Status: '',
+    image: null,
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -26,11 +33,16 @@ const UploadForm = () => {
     setImageLoaded(true);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      !carData.Car_Type ||!carData.Location ||!carData.Owner_Name ||!carData.Owner_Email ||!carData.Owner_Telephone ||!carData.Charges_Per_Hour ||!carData.Charges_Per_Day ||!carData.Rental_Status ||!carData.image
+      !carData.Car_Type ||
+      !carData.Location ||
+      !carData.Car_ID ||
+      !carData.Charges_Per_Hour ||
+      !carData.Charges_Per_Day ||
+      !carData.Rental_Status ||
+      !carData.image
     ) {
       setErrorMessage('Please fill in all fields');
       return;
@@ -39,15 +51,29 @@ const UploadForm = () => {
     const formData = new FormData();
     formData.append('Car_Type', carData.Car_Type);
     formData.append('Location', carData.Location);
-    formData.append('Owner_Name', carData.Owner_Name);
-    formData.append('Owner_Email', carData.Owner_Email);
-    formData.append('Owner_Telephone', carData.Owner_Telephone);
+    formData.append('Car_ID', carData.Car_ID);
     formData.append('Charges_Per_Hour', carData.Charges_Per_Hour);
     formData.append('Charges_Per_Day', carData.Charges_Per_Day);
     formData.append('Rental_Status', carData.Rental_Status);
     formData.append('image', carData.image);
 
     try {
+      const response = await axios.get(
+        `http://localhost:3004/api/ownerDetails/${user.email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.data && response.data.id) {
+        formData.append('Owner_ID', response.data.id);
+      } else {
+        setErrorMessage('Failed to retrieve owner ID');
+        return;
+      }
+
       await axios.post('http://localhost:3004/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -55,9 +81,15 @@ const UploadForm = () => {
         onUploadProgress: handleUploadProgress,
       });
 
-      // Clear the form
       setCarData({
-        Car_Type: '', Location: '', Owner_Name: '', Owner_Email: '', Owner_Telephone: '', Charges_Per_Hour: '',Charges_Per_Day: '',Rental_Status: '',image: null,
+        Car_Type: '',
+        Location: '',
+        Owner_ID: '',
+        Car_ID: '',
+        Charges_Per_Hour: '',
+        Charges_Per_Day: '',
+        Rental_Status: '',
+        image: null,
       });
 
       setErrorMessage('');
@@ -66,41 +98,90 @@ const UploadForm = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchOwnerID = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3004/api/ownerDetails/${user.email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+
+        if (response.data && response.data.id) {
+          setCarData((prevCarData) => ({
+            ...prevCarData,
+            Owner_ID: response.data.id,
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching owner ID:', error);
+      }
+    };
+
+    fetchOwnerID();
+  }, [user]);
+
   return (
     <form onSubmit={handleSubmit} className="upload-form">
       <h1>Car Uploads</h1>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       <div>
         <label>Car Type:</label>
-        <input type="text" name="Car_Type" value={carData.Car_Type} onChange={handleChange} />
+        <input
+          type="text"
+          name="Car_Type"
+          value={carData.Car_Type}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <label>Location:</label>
-        <input type="text" name="Location" value={carData.Location} onChange={handleChange} />
+        <input
+          type="text"
+          name="Location"
+          value={carData.Location}
+          onChange={handleChange}
+        />
       </div>
       <div>
-        <label>Owner Name:</label>
-        <input type="text" name="Owner_Name" value={carData.Owner_Name} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Owner Email:</label>
-        <input type="email" name="Owner_Email" value={carData.Owner_Email} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Owner Telephone:</label>
-        <input type="tel" name="Owner_Telephone" value={carData.Owner_Telephone} onChange={handleChange} />
+        <label>Car Plate:</label>
+        <input
+          type="text"
+          name="Car_ID"
+          value={carData.Car_ID}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <label>Charges Per Hour:</label>
-        <input type="number" step="0.01" name="Charges_Per_Hour" value={carData.Charges_Per_Hour} onChange={handleChange} />
+        <input
+          type="number"
+          step="0.01"
+          name="Charges_Per_Hour"
+          value={carData.Charges_Per_Hour}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <label>Charges Per Day:</label>
-        <input type="number" step="0.01" name="Charges_Per_Day" value={carData.Charges_Per_Day} onChange={handleChange} />
+        <input
+          type="number"
+          step="0.01"
+          name="Charges_Per_Day"
+          value={carData.Charges_Per_Day}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <label>Rental Status:</label>
-        <select name="Rental_Status" value={carData.Rental_Status} onChange={handleChange}>
+        <select
+          name="Rental_Status"
+          value={carData.Rental_Status}
+          onChange={handleChange}
+        >
           <option value="">Select</option>
           <option value="Available">Available</option>
           <option value="Unavailable">Unavailable</option>
@@ -109,7 +190,8 @@ const UploadForm = () => {
       <div>
         <label>Image:</label>
         <input type="file" name="image" onChange={handleChange} />
-      </div><br/>
+      </div>
+      <br />
       {carData.image && (
         <div>
           <img
@@ -118,7 +200,8 @@ const UploadForm = () => {
             width={200}
             height={150}
             onLoad={handleImageLoad}
-          /><br />
+          />
+          <br />
           {!imageLoaded && (
             <div className="progress-bar">
               <div
@@ -132,6 +215,8 @@ const UploadForm = () => {
 
       <br />
       <button type="submit">Upload</button>
+      <button onClick={onBackClick}>Back</button>
+
     </form>
   );
 };

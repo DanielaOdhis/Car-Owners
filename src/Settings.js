@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Settings({ onLogout, onProfileClick, onDeleteAccount, user }) {
+export default function Settings({ onLogout, onProfileClick, onDeleteAccount, user, onUpload }) {
   const [showPrompt, setShowPrompt] = useState(false);
 
   const handlePrompt = () => {
@@ -16,6 +16,7 @@ export default function Settings({ onLogout, onProfileClick, onDeleteAccount, us
       <div className="settings-dropdown">
         <ul>
           <li onClick={onProfileClick}>Profile</li>
+          <li onClick={onUpload}>Upload Cars</li>
           <li onClick={onLogout}>Log Out</li>
           <li onClick={handlePrompt}>Delete Account</li>
         </ul>
