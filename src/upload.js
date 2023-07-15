@@ -23,18 +23,19 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
       setCarData({ ...carData, [event.target.name]: event.target.value });
     }
   };
+
   const handleUploadProgress = (progressEvent) => {
-    const percentCompleted = Math.round(
-      (progressEvent.loaded * 100) / progressEvent.total
-    );
+    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
     setUploadProgress(percentCompleted);
   };
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (
       !carData.Car_Type ||
       !carData.Location ||
@@ -58,14 +59,11 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
     formData.append('image', carData.image);
 
     try {
-      const response = await axios.get(
-        `http://localhost:3004/api/ownerDetails/${user.email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      const response = await axios.get(`http://localhost:3004/api/ownerDetails/${user.email}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
 
       if (response.data && response.data.id) {
         formData.append('Owner_ID', response.data.id);
@@ -94,21 +92,19 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
 
       setErrorMessage('');
     } catch (error) {
-      console.error(error);
+      console.error('Error submitting form:', error);
+      setErrorMessage('Failed to submit form');
     }
   };
 
   useEffect(() => {
     const fetchOwnerID = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3004/api/ownerDetails/${user.email}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          }
-        );
+        const response = await axios.get(`http://localhost:3004/api/ownerDetails/${user.email}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
         if (response.data && response.data.id) {
           setCarData((prevCarData) => ({
@@ -130,30 +126,15 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       <div>
         <label>Car Type:</label>
-        <input
-          type="text"
-          name="Car_Type"
-          value={carData.Car_Type}
-          onChange={handleChange}
-        />
+        <input type="text" name="Car_Type" value={carData.Car_Type} onChange={handleChange} />
       </div>
       <div>
         <label>Location:</label>
-        <input
-          type="text"
-          name="Location"
-          value={carData.Location}
-          onChange={handleChange}
-        />
+        <input type="text" name="Location" value={carData.Location} onChange={handleChange} />
       </div>
       <div>
         <label>Car Plate:</label>
-        <input
-          type="text"
-          name="Car_ID"
-          value={carData.Car_ID}
-          onChange={handleChange}
-        />
+        <input type="text" name="Car_ID" value={carData.Car_ID} onChange={handleChange} />
       </div>
       <div>
         <label>Charges Per Hour:</label>
@@ -177,11 +158,7 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
       </div>
       <div>
         <label>Rental Status:</label>
-        <select
-          name="Rental_Status"
-          value={carData.Rental_Status}
-          onChange={handleChange}
-        >
+        <select name="Rental_Status" value={carData.Rental_Status} onChange={handleChange}>
           <option value="">Select</option>
           <option value="Available">Available</option>
           <option value="Unavailable">Unavailable</option>
@@ -204,19 +181,14 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
           <br />
           {!imageLoaded && (
             <div className="progress-bar">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+              <div className="progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
             </div>
           )}
         </div>
       )}
-
       <br />
       <button type="submit">Upload</button>
       <button onClick={onBackClick}>Back</button>
-
     </form>
   );
 };
