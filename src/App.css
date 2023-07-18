@@ -276,3 +276,16 @@ button {
   width:300px;
   height:200px;
 }
+.booked-car-details{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  }
+  .booked{
+    text-align: center;
+  position: relative;
+  }
+  .no-cars-message {
+    font-size: 24px;
+    font-family: "Arial", sans-serif;
+  }

@@ -8,6 +8,7 @@ import Setting from './setting.png';
 import Settings from './Settings.js';
 import Profile from './Profile.js';
 import UploadForm from './upload.js';
+import BookedCars from './BookedCars.js';
 import './App.css';
 
 const App = () => {
@@ -20,12 +21,14 @@ const App = () => {
   const [showOwnerCars, setShowOwnerCars] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [showBookedCars, setShowBookedCars] = useState(false);
 
   const handleBackClick = () => {
     setSelectedCar(null);
     setShowOwnerCars(true);
     setShowProfilePage(false);
     setShowSettings(false);
+    setShowBookedCars(false);
     setShowUploadForm(false);
   };
 
@@ -71,8 +74,10 @@ const App = () => {
 
   const onLogin = (email) => {
     console.log('User logged in:', email);
-    fetchProfileData(email); // Fetch profile data after login
-    setShowOwnerCars(true); // Show OwnerCars component after login
+    fetchProfileData(email);
+    setShowOwnerCars(true);
+    setShowProfilePage(false);
+    setShowBookedCars(false);
   };
 
   const handleLogout = () => {
@@ -80,7 +85,8 @@ const App = () => {
     setShowLoginForm(true);
     setUser(null);
     setProfileData(null);
-    setShowOwnerCars(false); // Hide OwnerCars component after logout
+    setShowOwnerCars(false);
+    setShowBookedCars(false);
   };
 
   const handleDeleteAccount = () => {
@@ -101,7 +107,9 @@ const App = () => {
 
   const handleProfileClick = () => {
     setShowProfilePage(true);
-    setShowOwnerCars(false); // Hide OwnerCars component when viewing profile
+    setShowOwnerCars(false);
+    setShowSettings(false);
+    setShowBookedCars(false);
   };
 
   const handleClickOutsideDropdown = (event) => {
@@ -121,13 +129,26 @@ const App = () => {
   const handleCarClick = (car) => {
     setSelectedCar(car);
     setShowProfilePage(false);
+    setShowBookedCars(false);
     setShowUploadForm(false);
+    setShowSettings(false);
   };
 
   const handleShowUploadForm = () => {
     setShowUploadForm(true);
     setShowOwnerCars(false);
     setSelectedCar(null);
+    setShowSettings(false);
+    setShowBookedCars(false);
+    setShowSettings(false);
+  };
+
+  const handleBookedCarsClick = () => {
+    setShowBookedCars(true);
+    setSelectedCar(null);
+    setShowProfilePage(false);
+    setShowOwnerCars(false);
+    setShowSettings(false);
   };
 
   return (
@@ -181,11 +202,19 @@ const App = () => {
                   />
                 )
               ) : (
-                <UploadForm
-                  user={user}
-                  fetchProfileData={fetchProfileData}
-                  onBackClick={handleBackClick}
-                />
+                showBookedCars ? (
+                  <BookedCars
+                    onBackClick={handleBackClick}
+                    profileData={profileData}
+                    user={user}
+                  />
+                ) : (
+                  <UploadForm
+                    user={user}
+                    fetchProfileData={fetchProfileData}
+                    onBackClick={handleBackClick}
+                  />
+                )
               )}
               <div className="settings-button" id="settings-button">
                 <button onClick={() => setShowSettings(!showSettings)}>
@@ -195,6 +224,7 @@ const App = () => {
                   <Settings
                     onLogout={handleLogout}
                     onProfileClick={handleProfileClick}
+                    onBookedClick={handleBookedCarsClick}
                     onDeleteAccount={() => handleDeleteAccount(user.email)}
                     user={user}
                     onUpload={() => setShowOwnerCars(false)}
