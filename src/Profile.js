@@ -19,7 +19,7 @@ export default function Profile({ profileData, onBackClick }) {
       )}
       <button onClick={onBackClick}>Back</button>
       <hr/>
-      <Update/>
+      <Update profileData={profileData}/>
     </div>
   );
 }

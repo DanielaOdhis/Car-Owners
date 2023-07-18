@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const UpdateCars = ({ user }) => {
+const UpdateCars = ({ user, car }) => {
   const [carData, setCarData] = useState({
-    Car_ID: '', // Add the Car_ID field
+    Car_ID: '',
     Car_Type: '',
     Location: '',
     Charges_Per_Hour: '',
@@ -14,6 +14,20 @@ const UpdateCars = ({ user }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    if (car) {
+      setCarData({
+        Car_ID: car.Car_ID,
+        Car_Type: car.Car_Type,
+        Location: car.Location,
+        Charges_Per_Hour: car.Charges_Per_Hour,
+        Charges_Per_Day: car.Charges_Per_Day,
+        Rental_Status: car.Rental_Status,
+        image: null,
+      });
+    }
+  }, [car]);
 
   const handleChange = (event) => {
     if (event.target.name === 'image') {

@@ -3,6 +3,8 @@ import axios from 'axios';
 
 export default function BookedCars({ onBackClick, profileData, carData }) {
   const [bookedCars, setBookedCars] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   useEffect(() => {
     if (profileData && profileData.id) {
@@ -17,9 +19,9 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-  
+
       const userDetails = userDetailsResponse.data;
-  
+
       if (userDetails && userDetails.id) {
         const response = await axios.get(`http://localhost:3004/api/bookedCars/${owner}`);
         const bookedCars = response.data;
@@ -50,6 +52,31 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
     }
   };
 
+  const deleteBookedCar = async (id) => {
+    try {
+      const carToDelete = bookedCars.find((car) => car.id === id);
+
+      const response = await axios.delete(`http://localhost:3004/api/bookedCars/${carToDelete.book_details.id}`);
+
+      if (response.status === 200) {
+        try {
+          await axios.put(`http://localhost:3004/api/cars/${carToDelete.car_details.Car_ID}`, {
+            Rental_Status: 'Available',
+          });
+          console.log('Availability status updated successfully.');
+        } catch (error) {
+          console.error('Error updating availability status:', error);
+        }
+        console.log('Booking canceled successfully.');
+        fetchBookedCars(profileData.id);
+      } else {
+        console.error('Error canceling booking:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error canceling booking:', error);
+    }
+  };
+
   const bufferToBase64 = (buffer) => {
     if (!buffer || !buffer.data) {
       return '';
@@ -62,6 +89,24 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
     return `data:image/${type};base64,${base64String}`;
   };
 
+  const handleCancelClick = (booking) => {
+    setSelectedBooking(booking);
+    setShowConfirmation(true);
+  };
+
+  const confirmCancel = () => {
+    setShowConfirmation(false);
+    if (selectedBooking) {
+      deleteBookedCar(selectedBooking.id);
+      setSelectedBooking(null);
+    }
+  };
+
+  const cancelCancel = () => {
+    setShowConfirmation(false);
+    setSelectedBooking(null);
+  };
+
   return (
     <div>
       <h1>Booked Cars</h1>
@@ -69,7 +114,7 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
         <div>
           <div className='booked-car-details'>
             {bookedCars.map((booking) => (
-              <div className='booked' key={booking.car_details.Car_ID}>
+              <div className='booked' key={booking.car_details.Car_ID} onClick={() => handleCancelClick(booking)}>
                 <h2>{booking.car_details.Car_Type}</h2>
                 <img src={bufferToBase64(booking.car_details.image)} alt={booking.car_details.Car_Type} />
                 <p><b>Client's User Name</b>: {booking.user_details.username}</p>
@@ -85,6 +130,13 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
         <div>
           <p className="no-cars-message">No booked cars found.</p>
           <button onClick={onBackClick}>Back</button>
+        </div>
+      )}
+      {showConfirmation && (
+        <div className="confirmation-modal">
+          <p>You're about to cancel this order. Are you sure?</p>
+          <button onClick={confirmCancel}>Confirm</button>
+          <button onClick={cancelCancel}>Cancel</button>
         </div>
       )}
     </div>

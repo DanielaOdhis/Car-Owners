@@ -1,7 +1,7 @@
 import axios from 'axios';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
-export default function Update() {
+export default function Update({profileData}) {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -11,6 +11,23 @@ export default function Update() {
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    useEffect(() => {
+      fetchData();
+    }, );
+    const fetchData = async () => {
+      try {
+        if (profileData) {
+          setUsername(profileData.username);
+          setEmail(profileData.email);
+          setFirstName(profileData.firstName);
+          setLastName(profileData.lastName);
+          setPhoneNumber(profileData.phoneNumber);
+          setPassword(profileData.password);
+        }
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
     const handleUpdateClick= async (e)=> {
         e.preventDefault();
         await axios.put(`http://localhost:3004/api/ownerDetails/${email}` , {username, email, firstName, lastName, phoneNumber, password})
@@ -24,7 +41,7 @@ export default function Update() {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
       };
-    
+
 
     return (
         <div>

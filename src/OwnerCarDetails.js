@@ -73,7 +73,7 @@ const OwnerCarDetails = ({ car, user, onBackClick, profileData, fetchCarDetails 
         <p>Loading...</p>
       )}
       <div className='update'>
-        <UpdateCars user={user} fetchProfileData={fetchOwnerDetails} onBackClick={onBackClick} />
+        <UpdateCars user={user} fetchProfileData={fetchOwnerDetails} onBackClick={onBackClick} car={car}/>
       </div>
     </div>
   );
