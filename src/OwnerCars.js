@@ -43,20 +43,31 @@ const OwnerCars = ({ user, profileData, onCarClick, onShowUploadForm, showUpload
     return <div>Loading...</div>;
   }
 
-  if (cars.length === 0) {
-    return (
-      <div>
-        <p className='no-cars-message'>No cars found.</p>
-        <button onClick={onShowUploadForm}>Click Here to get Started</button>
-      </div>
-    );
+  const availableCars = cars.filter((car) => car.Rental_Status === 'Available');
+
+  if (availableCars.length === 0) {
+    if (cars.length === 0) {
+      return (
+        <div>
+          <p className='no-cars-message'>No cars found.</p>
+          <button onClick={onShowUploadForm}>Click Here to get Started</button>
+        </div>
+      );
+    } else {
+      return (
+        <div >
+          <h1>My Cars</h1>
+          <p className='no-cars-message'>All Cars Have Been Booked🎉</p>
+        </div>
+      );
+    }
   }
 
   return (
     <div>
       <h1>My Cars</h1>
       <div className="grid-container">
-        {cars.map((car, index) => (
+        {availableCars.map((car, index) => (
           <div key={index} className="grid-item" onClick={() => onCarClick(car)}>
             <h2>{car.Car_Type}</h2>
             <img src={bufferToBase64(car.image)} alt={car.Car_Type} />

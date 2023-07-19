@@ -216,21 +216,25 @@ const App = () => {
                   />
                 )
               )}
-              <div className="settings-button" id="settings-button">
-                <button onClick={() => setShowSettings(!showSettings)}>
-                  <img src={Setting} alt="Settings" />
-                </button>
-                {showSettings && (
-                  <Settings
-                    onLogout={handleLogout}
-                    onProfileClick={handleProfileClick}
-                    onBookedClick={handleBookedCarsClick}
-                    onDeleteAccount={() => handleDeleteAccount(user.email)}
-                    user={user}
-                    onUpload={() => setShowOwnerCars(false)}
-                  />
-                )}
-              </div>
+
+              {/* The Settings component is shown only if showOwnerCars is true */}
+              {showOwnerCars && (
+                <div className="settings-button" id="settings-button">
+                  <button onClick={() => setShowSettings(!showSettings)}>
+                    <img src={Setting} alt="Settings" />
+                  </button>
+                  {showSettings && (
+                    <Settings
+                      onLogout={handleLogout}
+                      onProfileClick={handleProfileClick}
+                      onBookedClick={handleBookedCarsClick}
+                      onDeleteAccount={() => handleDeleteAccount(user.email)}
+                      user={user}
+                      onUpload={() => setShowOwnerCars(false)}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
