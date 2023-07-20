@@ -55,7 +55,6 @@ const OwnerCarDetails = ({ car, user, onBackClick, profileData, fetchCarDetails 
           <img src={bufferToBase64(car.image)} alt={car.Car_Type} />
           <p>Availability Status: {car.Rental_Status}</p>
           <p>Price per Hour: {car.Charges_Per_Hour}$</p>
-          <p>Price per Day: {car.Charges_Per_Day}$</p>
           <p>Location: {car.Location}</p>
           <p>Car Plate: {car.Car_ID}</p>
           {ownerDetails && (

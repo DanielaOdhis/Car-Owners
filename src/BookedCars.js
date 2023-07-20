@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function BookedCars({ onBackClick, profileData, carData }) {
+export default function BookedCars({ onBackClick, profileData }) {
   const [bookedCars, setBookedCars] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [totalBill, setTotalBill] = useState(0);
 
   useEffect(() => {
     if (profileData && profileData.id) {
       fetchBookedCars(profileData.id);
     }
   }, [profileData]);
+
+  useEffect(() => {
+    if (selectedBooking) {
+      setBookedCars(prevBookedCars =>
+        prevBookedCars.map(booking =>
+          booking.id === selectedBooking.id ? { ...booking, } : booking
+        )
+      );
+    }
+  }, [selectedBooking]);
 
   const fetchBookedCars = async (owner) => {
     try {
@@ -107,6 +120,137 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
     setSelectedBooking(null);
   };
 
+   /* const handleStartTimer = async (selectedBooking) => {
+    console.log("Timer Starting");
+    if (isTimerRunning) {
+      clearInterval(intervalRef.current);
+      setIsTimerRunning(false);
+
+      if (selectedBooking && startTime) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        const totalTimeElapsed = currentTime - startTime;
+        const formattedStartTime = new Date(startTime * 1000).toISOString().slice(11, 19);
+
+        const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+        console.log(response.data[0]);
+        let existingTotalTime = [response.data[0].total_time] || 0;
+        console.log("existingTotalTime", existingTotalTime);
+        if (typeof existingTotalTime !== "number") {
+          existingTotalTime = parseFloat(existingTotalTime); // Convert to a number if it's a string
+        }
+        console.log("Elapsed Time", totalTimeElapsed );
+        const newTotalTime = (existingTotalTime + totalTimeElapsed);
+        console.log("newTotalTime", newTotalTime);
+
+        try {
+          const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+          const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
+
+
+          await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
+            start_time: formattedStartTime,
+            total_time: newTotalTime/3600,
+          });
+          const carChargesPerHour = cars.data[0].Charges_Per_Hour;
+          const bill = carChargesPerHour * ((newTotalTime/3600)-1);
+          setTotalBill(bill);
+
+          console.log('Time data posted successfully.');
+        } catch (error) {
+          console.error('Error posting time data:', error);
+        }
+
+        setBookedCars(prevBookedCars =>
+          prevBookedCars.map(booking =>
+            booking.id === selectedBooking.id ? { ...booking, total_time: newTotalTime } : booking
+          )
+        );
+        setIsTimerRunning(false);
+        setElapsedTime(prevElapsedTime => prevElapsedTime + totalTimeElapsed); // Update elapsed time correctly
+      }
+    } else {
+      const interval = setInterval(() => {
+        setTimer(prevTimer => prevTimer + 1);
+      }, 1000);
+      intervalRef.current = interval;
+      setIsTimerRunning(true);
+      setStartTime(Math.floor(Date.now() / 1000));
+    }
+  };*/
+
+  const handleStartTimer = async () => {
+    console.log("Timer Starting");
+    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+    let existingTotalTime = response.data[0].total_time || 0;
+    let newTotalTime=(existingTotalTime);
+    if (typeof existingTotalTime !== "number" || isNaN(existingTotalTime)) {
+      existingTotalTime = 0; // Set a default value if parsing fails or it's NaN
+      newTotalTime = existingTotalTime;
+    }
+    // the problem is here actually formattedStartTime is always 00.00.00
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    const formattedStartTime = new Date(currentTime * 1000)
+    // .toISOString().slice(11, 19);
+    console.log(formattedStartTime)
+    try{
+      const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+      console.log(response.data)
+      await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
+        start_time: formattedStartTime,
+        total_time: newTotalTime,
+      });
+      console.log("Timer successfully updated in the database!");
+    } catch (error) {
+      console.error('Error posting time data:', error);
+    }
+    setIsTimerRunning(true);
+  }
+
+  const handleStopTimer = async () => {
+    console.log("Timer Stopping");
+    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+    const bookedCars = response.data[0];
+    let t_time=bookedCars.total_time || 0;
+    let new_total=(t_time*3600);
+  
+    let s_time=bookedCars.start_time;
+    console.log("S_T: ",s_time)
+    const currentTime = Math.floor(Date.now() / 1000);
+    const formattedCurrentTime = new Date(currentTime * 1000).toISOString().slice(11, 19);
+    console.log("F_C_T: ",formattedCurrentTime)
+    console.log("N_T: ",formattedCurrentTime - s_time)
+    const secondsToHours = (seconds) => {
+      const hours = seconds / 3600;
+      return isNaN(hours) ? 0 : Number(hours.toFixed(2));
+    };
+    new_total+=parseFloat(secondsToHours(currentTime - s_time));
+     console.log("new total: ",new_total);
+    try{
+      const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+      const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
+      await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
+        start_time: s_time,
+        total_time: new_total/3600,
+      });
+      console.log("Timer successfully updated in the database!");
+      const carChargesPerHour = cars.data[0].Charges_Per_Hour;
+      const bill = carChargesPerHour * ((new_total/3600)-1);
+      setTotalBill(bill);
+    } catch (error) {
+      console.error('Error posting time data:', error);
+    }
+    setIsTimerRunning(false);
+  }
+
+  const formatTimeInHours = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  };
+
   return (
     <div>
       <h1>Booked Cars</h1>
@@ -114,14 +258,32 @@ export default function BookedCars({ onBackClick, profileData, carData }) {
         <div>
           <div className='booked-car-details'>
             {bookedCars.map((booking) => (
-              <div className='booked' key={booking.car_details.Car_ID} onClick={() => handleCancelClick(booking)}>
+              <div className='booked' key={booking.car_details.Car_ID} >
                 <h2>{booking.car_details.Car_Type}</h2>
-                <img src={bufferToBase64(booking.car_details.image)} alt={booking.car_details.Car_Type} />
+                <div onClick={() => handleCancelClick(booking)}>
+                  <img src={bufferToBase64(booking.car_details.image)} alt={booking.car_details.Car_Type} />
+                </div>
                 <p><b>Client's User Name</b>: {booking.user_details.username}</p>
                 <p><b>Client's Phone Number</b>: {booking.user_details.phoneNumber}</p>
                 <p><b>Booking Date</b>: {booking.book_details.booking_date}</p>
                 <p><b>Pickup Time</b>: {booking.book_details.pickup_time}</p>
-              <button onClick={onBackClick}>Back</button>
+                <p><b>Total Bill</b>: {totalBill}$</p>
+                {booking.total_time ? (
+                  <p><b>Total Time Elapsed</b>: {formatTimeInHours(booking.total_time)}</p>
+                  ) : (
+                  <>
+                    {isTimerRunning ? (
+                  <>
+                    <button onClick={handleStopTimer}>Stop Timer</button>
+                  </>
+                  ) : (
+                  <>
+                <button onClick={handleStartTimer}>Start Timer</button>
+                </>
+                )}
+                </>
+              )}
+                <button onClick={onBackClick}>Back</button>
               </div>
             ))}
           </div>

@@ -7,7 +7,6 @@ const UpdateCars = ({ user, car }) => {
     Car_Type: '',
     Location: '',
     Charges_Per_Hour: '',
-    Charges_Per_Day: '',
     Rental_Status: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -21,7 +20,6 @@ const UpdateCars = ({ user, car }) => {
         Car_Type: car.Car_Type,
         Location: car.Location,
         Charges_Per_Hour: car.Charges_Per_Hour,
-        Charges_Per_Day: car.Charges_Per_Day,
         Rental_Status: car.Rental_Status,
       });
     }
@@ -79,7 +77,6 @@ const UpdateCars = ({ user, car }) => {
       !carData.Car_Type ||
       !carData.Location ||
       !carData.Charges_Per_Hour ||
-      !carData.Charges_Per_Day ||
       !carData.Rental_Status
     ) {
       setErrorMessage('Please fill in all fields');
@@ -91,7 +88,6 @@ const UpdateCars = ({ user, car }) => {
     formData.append('Car_Type', carData.Car_Type);
     formData.append('Location', carData.Location);
     formData.append('Charges_Per_Hour', carData.Charges_Per_Hour);
-    formData.append('Charges_Per_Day', carData.Charges_Per_Day);
     formData.append('Rental_Status', carData.Rental_Status);
 
     try {
@@ -106,7 +102,6 @@ const UpdateCars = ({ user, car }) => {
         Car_Type: '',
         Location: '',
         Charges_Per_Hour: '',
-        Charges_Per_Day: '',
         Rental_Status: '',
       });
 
@@ -141,16 +136,6 @@ const UpdateCars = ({ user, car }) => {
             step="0.01"
             name="Charges_Per_Hour"
             value={carData.Charges_Per_Hour}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Charges Per Day:</label>
-          <input
-            type="number"
-            step="0.01"
-            name="Charges_Per_Day"
-            value={carData.Charges_Per_Day}
             onChange={handleChange}
           />
         </div>
