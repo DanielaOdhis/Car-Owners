@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 
 export default function BookedCars({ onBackClick, profileData }) {
   const [bookedCars, setBookedCars] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [startTime, setStartTime] = useState(null);
   const [totalBill, setTotalBill] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
 
   useEffect(() => {
     if (profileData && profileData.id) {
@@ -151,6 +153,7 @@ export default function BookedCars({ onBackClick, profileData }) {
             start_time: formattedStartTime,
             total_time: newTotalTime/3600,
           });
+
           const carChargesPerHour = cars.data[0].Charges_Per_Hour;
           const bill = carChargesPerHour * ((newTotalTime/3600)-1);
           setTotalBill(bill);
@@ -180,68 +183,146 @@ export default function BookedCars({ onBackClick, profileData }) {
 
   const handleStartTimer = async () => {
     console.log("Timer Starting");
-    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
-    let existingTotalTime = response.data[0].total_time || 0;
-    let newTotalTime=(existingTotalTime);
-    if (typeof existingTotalTime !== "number" || isNaN(existingTotalTime)) {
-      existingTotalTime = 0; // Set a default value if parsing fails or it's NaN
-      newTotalTime = existingTotalTime;
-    }
-    // the problem is here actually formattedStartTime is always 00.00.00
-    
-    const currentTime = Math.floor(Date.now() / 1000);
-    const formattedStartTime = new Date(currentTime * 1000)
-    // .toISOString().slice(11, 19);
-    console.log(formattedStartTime)
-    try{
+    if (!isTimerRunning) {
       const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
-      console.log(response.data)
-      await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
-        start_time: formattedStartTime,
-        total_time: newTotalTime,
-      });
-      console.log("Timer successfully updated in the database!");
-    } catch (error) {
-      console.error('Error posting time data:', error);
+      let existingTotalTime = response.data[0].total_time || 0;
+      let newTotalTime = existingTotalTime;
+      if (typeof existingTotalTime !== "number" || isNaN(existingTotalTime)) {
+        existingTotalTime = 0;
+        newTotalTime = existingTotalTime;
+      }
+
+      const startTime = moment().format('YYYY-MM-DD HH:mm:ss');
+      console.log("Time", startTime);
+
+      try {
+        const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+        console.log(response.data);
+        await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
+          start_time: startTime,
+          total_time: newTotalTime / 3600,
+        });
+        console.log("Timer successfully updated in the database!");
+      } catch (error) {
+        console.error('Error posting time data:', error);
+      }
+      const interval = setInterval(updateDisplay, 1000);
+      setIntervalId(interval);
+      setIsTimerRunning(true);
     }
-    setIsTimerRunning(true);
-  }
+  };
+
+  const continueTimer = async () => {
+    if (!isTimerRunning) {
+      const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+      const bookedCar = response.data[0];
+      console.log(bookedCar.start_time)
+      let existingTotalTime = bookedCar.total_time || 0;
+
+      let newTotalTime = existingTotalTime;
+      if (typeof existingTotalTime !== "number" || isNaN(existingTotalTime)) {
+        existingTotalTime = 0;
+        newTotalTime = existingTotalTime;
+      }
+
+      const start_time = moment(bookedCar.start_time); // Parse the stored start time as a local moment object
+      const currentTime = moment(); // Current local time
+      const timeElapsed = currentTime.diff(start_time, 'seconds'); // Calculate the elapsed time in seconds
+      newTotalTime += timeElapsed / 3600; // Convert the elapsed time to hours and add to the existing total time
+
+      try {
+        await axios.put(`http://localhost:3004/api/bookings/${bookedCar.id}`, {
+          start_time: start_time.format('YYYY-MM-DD HH:mm:ss'), // Convert back to the database format
+          total_time: newTotalTime,
+        });
+        console.log('Timer successfully updated in the database!');
+
+        const cars = await axios.get(`http://localhost:3004/api/cars/${bookedCar.car_id}`);
+        const bill = cars.data[0].Charges_Per_Hour * (newTotalTime - 1);
+        setTotalBill(bill);
+      } catch (error) {
+        console.error('Error posting time data:', error);
+      }
+
+      const interval = setInterval(updateDisplay, 1000);
+      setIntervalId(interval);
+      setIsTimerRunning(true);
+    }
+  };
 
   const handleStopTimer = async () => {
     console.log("Timer Stopping");
-    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
-    const bookedCars = response.data[0];
-    let t_time=bookedCars.total_time || 0;
-    let new_total=(t_time*3600);
+    if (isTimerRunning) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+      try {
+        const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+        const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
+        const start_time = moment(response.data[0].start_time); // Parse the stored start time as a local moment object
+        const currentTime = moment(); // Current local time
+        const timeElapsed = currentTime.diff(start_time, 'seconds'); // Calculate the elapsed time in seconds
+        const existingTotalTime = response.data[0].total_time || 0;
+        const totalTime = (existingTotalTime + timeElapsed) / 3600; // Convert the total elapsed time to hours
   
-    let s_time=bookedCars.start_time;
-    console.log("S_T: ",s_time)
-    const currentTime = Math.floor(Date.now() / 1000);
-    const formattedCurrentTime = new Date(currentTime * 1000).toISOString().slice(11, 19);
-    console.log("F_C_T: ",formattedCurrentTime)
-    console.log("N_T: ",formattedCurrentTime - s_time)
-    const secondsToHours = (seconds) => {
-      const hours = seconds / 3600;
-      return isNaN(hours) ? 0 : Number(hours.toFixed(2));
-    };
-    new_total+=parseFloat(secondsToHours(currentTime - s_time));
-     console.log("new total: ",new_total);
-    try{
-      const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
-      const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
+        await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
+          start_time: start_time.format('YYYY-MM-DD HH:mm:ss'), // Convert back to the database format
+          total_time: totalTime,
+        });
+        console.log('Timer stopped and updated in the database.');
+  
+        const bill = cars.data[0].Charges_Per_Hour * (totalTime - 1);
+        setTotalBill(bill);
+      } catch (error) {
+        console.error('Error posting time data:', error);
+      }
+  
+      setIsTimerRunning(false);
+      setElapsedTime(0);
+    }
+  };
+
+  const updateDisplay = async () => {
+    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+    const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
+    const start_time = moment(response.data[0].start_time); // Parse the stored start time as a local moment object
+    const currentTime = moment(); // Current local time
+    const timeElapsed = currentTime.diff(start_time, 'seconds'); // Calculate the elapsed time in seconds
+    const elapsedTimeInHours = timeElapsed / 3600; // Convert the elapsed time to hours
+    const bill = cars.data[0].Charges_Per_Hour * (elapsedTimeInHours - 1);
+
+    setElapsedTime(timeElapsed);
+    setTotalBill(bill);
+
+    const displayElement = document.getElementById('display');
+    if (displayElement) {
+      const formattedTime = moment.utc(timeElapsed * 1000).format('HH:mm:ss');
+      displayElement.innerText = formattedTime;
+    }
+  };
+
+  const resetTimer = async () => {
+    clearInterval(intervalId);
+    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
+
+    try {
       await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
-        start_time: s_time,
-        total_time: new_total/3600,
+        start_time: null,
+        total_time: 0,
       });
-      console.log("Timer successfully updated in the database!");
-      const carChargesPerHour = cars.data[0].Charges_Per_Hour;
-      const bill = carChargesPerHour * ((new_total/3600)-1);
-      setTotalBill(bill);
+      console.log('Timer reset and updated in the database.');
     } catch (error) {
-      console.error('Error posting time data:', error);
+      console.error('Error resetting timer:', error);
+    }
+
+    setTotalBill(0);
+    setElapsedTime(0);
+
+    const displayElement = document.getElementById('display');
+    if (displayElement) {
+      displayElement.innerText = '00:00:00';
     }
     setIsTimerRunning(false);
-  }
+  };
 
   const formatTimeInHours = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -250,6 +331,16 @@ export default function BookedCars({ onBackClick, profileData }) {
 
     return `${hours}h ${minutes}m ${remainingSeconds}s`;
   };
+
+/*function padNumber(number) {
+    return number.toString().padStart(2, "0");
+}
+
+function displayElapsedTimeInHours(timeInMilliseconds) {
+    const totalHours = timeInMilliseconds / 3600000;
+    const displayString = `Time Elapsed: ${totalHours.toFixed(2)} hrs`;
+    document.getElementById("display").innerText = displayString;
+}*/
 
   return (
     <div>
@@ -272,13 +363,17 @@ export default function BookedCars({ onBackClick, profileData }) {
                   <p><b>Total Time Elapsed</b>: {formatTimeInHours(booking.total_time)}</p>
                   ) : (
                   <>
+                  <div id="display">00:00:00</div>
+
                     {isTimerRunning ? (
                   <>
                     <button onClick={handleStopTimer}>Stop Timer</button>
+                    <button onClick={resetTimer}>Reset Timer</button>
                   </>
                   ) : (
                   <>
                 <button onClick={handleStartTimer}>Start Timer</button>
+                <button onClick={continueTimer}>Continue Timer</button>
                 </>
                 )}
                 </>

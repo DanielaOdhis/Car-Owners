@@ -8,7 +8,6 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
     Owner_ID: '',
     Car_ID: '',
     Charges_Per_Hour: '',
-    Charges_Per_Day: '',
     Rental_Status: '',
     image: null,
   });
@@ -41,7 +40,6 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
       !carData.Location ||
       !carData.Car_ID ||
       !carData.Charges_Per_Hour ||
-      !carData.Charges_Per_Day ||
       !carData.Rental_Status ||
       !carData.image
     ) {
@@ -54,7 +52,6 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
     formData.append('Location', carData.Location);
     formData.append('Car_ID', carData.Car_ID);
     formData.append('Charges_Per_Hour', carData.Charges_Per_Hour);
-    formData.append('Charges_Per_Day', carData.Charges_Per_Day);
     formData.append('Rental_Status', carData.Rental_Status);
     formData.append('image', carData.image);
 
@@ -85,7 +82,6 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
         Owner_ID: '',
         Car_ID: '',
         Charges_Per_Hour: '',
-        Charges_Per_Day: '',
         Rental_Status: '',
         image: null,
       });
@@ -143,16 +139,6 @@ const UploadForm = ({ user, fetchProfileData, onBackClick }) => {
           step="0.01"
           name="Charges_Per_Hour"
           value={carData.Charges_Per_Hour}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label>Charges Per Day:</label>
-        <input
-          type="number"
-          step="0.01"
-          name="Charges_Per_Day"
-          value={carData.Charges_Per_Day}
           onChange={handleChange}
         />
       </div>
