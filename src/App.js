@@ -9,6 +9,7 @@ import Settings from './Settings.js';
 import Profile from './Profile.js';
 import UploadForm from './upload.js';
 import BookedCars from './BookedCars.js';
+import Forgot from './forgotPassword.js';
 import './App.css';
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
   const [selectedCar, setSelectedCar] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [showBookedCars, setShowBookedCars] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
 
   const handleBackClick = () => {
     setSelectedCar(null);
@@ -151,26 +153,49 @@ const App = () => {
     setShowSettings(false);
   };
 
+  const handleForgot = () => {
+    setShowForgot(true);
+    setShowLoginForm(false);
+  };
+
+  const handleForgotLog=()=>{
+    setShowForgot(false);
+    setShowLoginForm(true);
+  }
+
   return (
     <div>
       {!isLoggedIn ? (
-        showLoginForm ? (
-          <div className="login-form">
-            <h1>Login</h1>
-            <Login onLogin={handleLogin} />
-            <p>
-              Don't have an account? <button onClick={() => setShowLoginForm(false)}>Sign up</button>
-            </p>
-          </div>
-        ) : (
-          <div className="signup-form">
-            <h1>Sign Up</h1>
-            <Signup onSignUp={handleSignup} />
-            <p>
-              Already have an account? <button onClick={() => setShowLoginForm(true)}>Login</button>
-            </p>
-          </div>
-        )
+        <>
+          {showLoginForm && !showForgot ? (
+            <div className="login-form">
+              <h1>Login</h1>
+              <Login onLogin={handleLogin} />
+              <p>
+                Don't have an account? <button onClick={() => setShowLoginForm(false)}>Sign up</button>
+              </p>
+              <div onClick={handleForgot} className="forgot-container">
+                <p>Forgot Password?</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {showForgot ? (
+                <div>
+                <Forgot onBack={handleForgotLog} />
+                </div>
+              ) : (
+                <div className="signup-form">
+                  <h1>Sign Up</h1>
+                  <Signup onSignUp={handleSignup} />
+                  <p>
+                    Already have an account? <button onClick={() => setShowLoginForm(true)}>Login</button>
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </>
       ) : (
         <div>
           {showProfilePage ? (
@@ -217,7 +242,6 @@ const App = () => {
                 )
               )}
 
-              {/* The Settings component is shown only if showOwnerCars is true */}
               {showOwnerCars && (
                 <div className="settings-button" id="settings-button">
                   <button onClick={() => setShowSettings(!showSettings)}>
