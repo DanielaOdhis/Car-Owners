@@ -300,30 +300,6 @@ export default function BookedCars({ onBackClick, profileData }) {
     }
   };
 
-  const resetTimer = async () => {
-    clearInterval(intervalId);
-    const response = await axios.get(`http://localhost:3004/api/bookedCars/${profileData.id}`);
-
-    try {
-      await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
-        start_time: null,
-        total_time: 0,
-      });
-      console.log('Timer reset and updated in the database.');
-    } catch (error) {
-      console.error('Error resetting timer:', error);
-    }
-
-    setTotalBill(0);
-    setElapsedTime(0);
-
-    const displayElement = document.getElementById('display');
-    if (displayElement) {
-      displayElement.innerText = '00:00:00';
-    }
-    setIsTimerRunning(false);
-  };
-
   const formatTimeInHours = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -368,7 +344,6 @@ function displayElapsedTimeInHours(timeInMilliseconds) {
                     {isTimerRunning ? (
                   <>
                     <button onClick={handleStopTimer}>Stop Timer</button>
-                    <button onClick={resetTimer}>Reset Timer</button>
                   </>
                   ) : (
                   <>
