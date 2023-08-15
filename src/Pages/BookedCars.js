@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import {useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function BookedCars() {
   const [bookedCars, setBookedCars] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [totalBill, setTotalBill] = useState(0);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  //const [isTimerRunning, setIsTimerRunning] = useState(false);
+ // const [totalBill, setTotalBill] = useState(0);
+ // const [elapsedTime, setElapsedTime] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const userId = localStorage.getItem("loggedUser");
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userId) {
       fetchBookedCars(userId);
     }
-  }, );
+  }, [userId]);
 
   useEffect(() => {
     if (selectedBooking) {
@@ -45,25 +45,35 @@ export default function BookedCars() {
       if (userDetails && userDetails.id) {
         const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
         const bookedCars = response.data;
+        console.log("Cars:", bookedCars);
 
-        const carIds = bookedCars.map((bookedCar) => bookedCar.car_id);
+        const carsWithUserDetails = [];
 
-        const carsWithDetails = await Promise.all(
-          carIds.map(async (bookedCar) => {
-            const carDetailsResponse = await axios.get(`http://localhost:3004/api/cars/${bookedCar}`);
-            const carDetails = carDetailsResponse.data;
-            const userDetailsResponse = await axios.get(`http://localhost:3004/api/userDetails/${bookedCars[0].user_id}`);
+        for (const bookedCar of bookedCars) {
+          const carDetailsResponse = await axios.get(`http://localhost:3004/api/cars/${bookedCar.car_id}`);
+          const carDetails = carDetailsResponse.data[0]; // Assuming carDetailsResponse.data is an array
 
-            return {
-              ...bookedCar,
-              car_details: carDetails[0],
-              user_details: userDetailsResponse.data,
-              book_details: bookedCars[0],
-            };
-          })
-        );
+          const userDetailsResponse = await axios.get(`http://localhost:3004/api/userDetails/${bookedCar.user_id}`);
+          const userDetails = userDetailsResponse.data;
 
-        setBookedCars(carsWithDetails);
+          const timerData = {
+            isTimerRunning: false,
+            elapsedTime: 0,
+            intervalId: null,
+           // totalBill: 0,
+          };
+
+          const combinedDetails = {
+            bookedCar,
+            carDetails,
+            userDetails,
+            timerData,
+          };
+
+          carsWithUserDetails.push(combinedDetails);
+        }
+        console.log("cARSd:", carsWithUserDetails)
+        setBookedCars(carsWithUserDetails);
         setLoading(false);
       } else {
         console.error('Invalid user details:', userDetails);
@@ -83,7 +93,7 @@ export default function BookedCars() {
 
       if (response.status === 200) {
         try {
-          await axios.put(`http://localhost:3004/api/cars/${carToDelete.car_details.Car_ID}`, {
+          await axios.put(`http://localhost:3004/api/cars/${carToDelete.carDetails.Car_ID}`, {
             Rental_Status: 'Available',
           });
           console.log('Availability status updated successfully.');
@@ -130,12 +140,17 @@ export default function BookedCars() {
     setSelectedBooking(null);
   };
 
-  const handleStartTimer = async () => {
+  const handleStartTimer = async (booking) => {
+    console.log("Booked cars ", booking);
+
     console.log("Timer Starting");
-    if (!isTimerRunning) {
-      const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
-      let existingTotalTime = response.data[0].total_time || 0;
+
+    if (!booking.timerData.isTimerRunning) {
+      const response = await axios.get(`http://localhost:3004/api/bookedCar/${booking.bookedCar.id}`);
+      console.log("wueh! ", response.data);
+      let existingTotalTime = 0;
       let newTotalTime = existingTotalTime;
+    //  booking.timerData.totalTime=0;
       if (typeof existingTotalTime !== "number" || isNaN(existingTotalTime)) {
         existingTotalTime = 0;
         newTotalTime = existingTotalTime;
@@ -143,28 +158,30 @@ export default function BookedCars() {
 
       const startTime = moment().format('YYYY-MM-DD HH:mm:ss');
       console.log("Time", startTime);
-
+      console.log("Total:", newTotalTime)
       try {
-        const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
-        console.log(response.data);
-        await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
+        // const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
+        // console.log(response.data);
+        await axios.put(`http://localhost:3004/api/bookings/${booking.bookedCar.id}`, {
           start_time: startTime,
-          total_time: newTotalTime / 3600,
+          total_time: newTotalTime,
         });
         console.log("Timer successfully updated in the database!");
       } catch (error) {
         console.error('Error posting time data:', error);
       }
-      const interval = setInterval(updateDisplay, 1000);
+      const interval = setInterval(updateDisplay(booking), 1000);
       setIntervalId(interval);
-      setIsTimerRunning(true);
+      booking.timerData.isTimerRunning=true;
+      console.log("Start:: ",booking.timerData.isTimerRunning);
     }
-  };
+  }
 
-  const continueTimer = async () => {
-    if (!isTimerRunning) {
-      const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
+  const continueTimer = async (booking) => {
+    if (!booking.timerData.isTimerRunning) {
+      const response = await axios.get(`http://localhost:3004/api/bookedCar/${booking.bookedCar.id}`);
       const bookedCar = response.data[0];
+      console.log("Test ", bookedCar);
       console.log(bookedCar.start_time)
       let existingTotalTime = bookedCar.total_time || 0;
 
@@ -186,90 +203,121 @@ export default function BookedCars() {
         });
         console.log('Timer successfully updated in the database!');
 
-        const cars = await axios.get(`http://localhost:3004/api/cars/${bookedCar.car_id}`);
-        const bill = cars.data[0].Charges_Per_Hour * (newTotalTime - 1);
-        setTotalBill(bill);
+        // const cars = await axios.get(`http://localhost:3004/api/cars/${bookedCar.car_id}`);
+        // const bill = cars.Charges_Per_Hour * (newTotalTime - 1);
+        // setTotalBill(bill);
       } catch (error) {
         console.error('Error posting time data:', error);
       }
 
-      const interval = setInterval(updateDisplay, 1000);
+      const interval = setInterval(updateDisplay(booking), 1000);
       setIntervalId(interval);
-      setIsTimerRunning(true);
+      // setIsTimerRunning(true);
+      booking.timerData.isTimerRunning = true;
     }
   };
 
-  const handleStopTimer = async () => {
+  const handleStopTimer = async (booking) => {
     console.log("Timer Stopping");
-    if (isTimerRunning) {
+    if (booking.timerData.isTimerRunning) {
       clearInterval(intervalId);
       setIntervalId(null);
       try {
-        const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
-        const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
+        const response = await axios.get(`http://localhost:3004/api/bookedCar/${booking.bookedCar.id}`);
+        //const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
         const start_time = moment(response.data[0].start_time); // Parse the stored start time as a local moment object
         const currentTime = moment(); // Current local time
         const timeElapsed = currentTime.diff(start_time, 'seconds'); // Calculate the elapsed time in seconds
         const existingTotalTime = response.data[0].total_time || 0;
         const totalTime = (existingTotalTime + timeElapsed) / 3600; // Convert the total elapsed time to hours
-  
+
         await axios.put(`http://localhost:3004/api/bookings/${response.data[0].id}`, {
           start_time: start_time.format('YYYY-MM-DD HH:mm:ss'), // Convert back to the database format
           total_time: totalTime,
         });
         console.log('Timer stopped and updated in the database.');
-  
-        const bill = cars.data[0].Charges_Per_Hour * (totalTime - 1);
-        setTotalBill(bill);
+
+        // const bill = cars.data[0].Charges_Per_Hour * (totalTime - 1);
+        // setTotalBill(bill);
       } catch (error) {
         console.error('Error posting time data:', error);
       }
-  
-      setIsTimerRunning(false);
-      setElapsedTime(0);
+
+      booking.timerData.isTimerRunning =false;
+      console.log("Stop::",booking.timerData.isTimerRunning);
+
+       setBookedCars(prevBookedCars =>
+        prevBookedCars.map(prevBooking =>
+          prevBooking.carDetails.Car_ID === booking.carDetails.Car_ID
+            ? { ...prevBooking, timerData: { ...booking.timerData, isTimerRunning: false } }
+            : prevBooking
+        )
+      );
+     // setElapsedTime(0);
     }
   };
+  const updateDisplay = (booking) => {
+    if (!booking.timerData.isTimerRunning) {
+      console.log("Updating display...");
 
-  const updateDisplay = async () => {
-    const response = await axios.get(`http://localhost:3004/api/bookedCars/${userId}`);
-    const cars = await axios.get(`http://localhost:3004/api/cars/${response.data[0].car_id}`);
-    const start_time = moment(response.data[0].start_time); // Parse the stored start time as a local moment object
-    const currentTime = moment(); // Current local time
-    const timeElapsed = currentTime.diff(start_time, 'seconds'); // Calculate the elapsed time in seconds
-    const elapsedTimeInHours = timeElapsed / 3600; // Convert the elapsed time to hours
-    const bill = cars.data[0].Charges_Per_Hour * (elapsedTimeInHours - 1);
+      const start_time = moment(booking.bookedCar.start_time); // Parse the stored start time as a local moment object
+      const currentTime = moment(); // Current local time
+      const timeElapsed = currentTime.diff(start_time, 'seconds'); // Calculate the elapsed time in seconds
+      // const elapsedTimeInHours = timeElapsed / 3600; // Convert the elapsed time to hours
+      const elapsedTime=timeElapsed;
+      booking.timerData.elapsedTime=elapsedTime;
+      console.log("Elapsed::", elapsedTime);
+      const displayElement = document.getElementById(`display-${booking.bookedCar.id}`);
+      console.log("Display Element:", displayElement);
 
-    setElapsedTime(timeElapsed);
-    setTotalBill(bill);
-
-    const displayElement = document.getElementById('display');
-    if (displayElement) {
-      const formattedTime = moment.utc(timeElapsed * 1000).format('HH:mm:ss');
-      displayElement.innerText = formattedTime;
-    }
-  };
-
+      if (displayElement) {
+         const formattedTime = formatTimeInHours(elapsedTime*1000).format('HH:mm:ss');
+         displayElement.innerText = formattedTime;
+       }
+    };
+  }
   const formatTimeInHours = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-
+    const remainingSeconds = Math.round(seconds % 60);
     return `${hours}h ${minutes}m ${remainingSeconds}s`;
   };
 
-/*function padNumber(number) {
-    return number.toString().padStart(2, "0");
-}
+  const formatDate = (dateString) => {
+    const formattedDate = new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
-function displayElapsedTimeInHours(timeInMilliseconds) {
-    const totalHours = timeInMilliseconds / 3600000;
-    const displayString = `Time Elapsed: ${totalHours.toFixed(2)} hrs`;
-    document.getElementById("display").innerText = displayString;
-}*/
+    return formattedDate;
+  };
 
-const handleBackClick=()=>{
-  navigate('/My-Cars');
-}
+  const formatTime = (timeString) => {
+    const formattedTime = new Date(timeString).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: true,
+    });
+
+    return formattedTime;
+  };
+
+  /*function padNumber(number) {
+      return number.toString().padStart(2, "0");
+  }
+  
+  function displayElapsedTimeInHours(timeInMilliseconds) {
+      const totalHours = timeInMilliseconds / 3600000;
+      const displayString = `Time Elapsed: ${totalHours.toFixed(2)} hrs`;
+      document.getElementById("display").innerText = displayString;
+  }*/
+
+  const handleBackClick = () => {
+    navigate('/My-Cars');
+  }
+
   return (
     <div>
       <h1>Booked Cars</h1>
@@ -280,34 +328,35 @@ const handleBackClick=()=>{
       ) : (
         <div>
           {bookedCars.length > 0 ? (
-          <div className='booked-car-details'>
-            {bookedCars.map((booking) => (
-              <div className='booked' key={booking.car_details.Car_ID} >
-                <h2>{booking.car_details.Car_Type}</h2>
-                <div onClick={() => handleCancelClick(booking)}>
-                  <img src={bufferToBase64(booking.car_details.image)} alt={booking.car_details.Car_Type} />
-                </div>
-                <p><b>Client's User Name</b>: {booking.user_details.username}</p>
-                <p><b>Client's Phone Number</b>: {booking.user_details.phoneNumber}</p>
-                <p><b>Booking Date</b>: {booking.book_details.booking_date}</p>
-                <p><b>Pickup Time</b>: {booking.book_details.pickup_time}</p>
-                <p><b>Total Bill</b>: {totalBill}$</p>
-                {booking.total_time ? (
-                    <p><b>Total Time Elapsed</b>: {formatTimeInHours(booking.total_time)}</p>
+            <div className='booked-car-details'>
+              {bookedCars.map((booking) => (
+                <div className='booked' key={booking.carDetails.Car_ID} >
+                  <h2>{booking.carDetails.Car_Type}</h2>
+                  <div onClick={() => handleCancelClick(booking)}>
+                    <img src={bufferToBase64(booking.carDetails.image)} alt={booking.carDetails.Car_Type} />
+                  </div>
+                  <p><b>Client's User Name</b>: {booking.userDetails.username}</p>
+                  <p><b>Client's Phone Number</b>: {booking.userDetails.phoneNumber}</p>
+                  <p><b>Booking Date</b>:  {formatDate(booking.bookedCar.booking_date)}</p>
+                  <p><b>Pickup Time</b>: {formatTime(booking.bookedCar.pickup_time)}</p>
+                  <p><b>Total Bill</b>: {(((booking.bookedCar.total_time-1)*booking.carDetails.Charges_Per_Hour).toFixed(2))}$</p>
+                  {booking.total_time ? (
+                    <p><b>Total Time Elapsed</b>: {formatTimeInHours(booking.bookedCar.total_time*3600)}</p>
                   ) : (
                     <div>
-                      <div id="display">00:00:00</div>
-                      {isTimerRunning ? (
-                        <button onClick={handleStopTimer}>Stop Timer</button>
+                      <div id={`display-${booking.id}`}>{formatTimeInHours(booking.bookedCar.total_time*3600)}</div>
+                      {booking.timerData.isTimerRunning ? (
+                        <div>
+                          <button onClick={() => handleStopTimer(booking)}>Stop Timer</button>
+                        </div>
                       ) : (
                         <div>
-                          <button onClick={handleStartTimer}>Start Timer</button>
-                          <button onClick={continueTimer}>Continue Timer</button>
+                          <button onClick={() => handleStartTimer(booking)}>Start Timer</button>
+                          <button onClick={() => continueTimer(booking)}>Continue Timer</button>
                         </div>
                       )}
                     </div>
                   )}
-                  <button onClick={handleBackClick}>Back</button>
                 </div>
               ))}
             </div>
@@ -319,6 +368,9 @@ const handleBackClick=()=>{
           )}
         </div>
       )}
+      <div>
+      <button onClick={handleBackClick}>Back</button>
+      </div>
       {showConfirmation && (
         <div className="confirmation-modal">
           <p>You're about to cancel this order. Are you sure?</p>

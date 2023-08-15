@@ -31,7 +31,6 @@ const App = () => {
     setSelectedCar(null);
     setShowOwnerCars(true);
     setShowProfilePage(false);
-    setShowSettings(false);
     setShowBookedCars(false);
     setShowUploadForm(false);
   };
@@ -124,23 +123,14 @@ const App = () => {
     };
   }, []);
 
- /* const handleCarClick = (car) => {
-    setSelectedCar(car);
-    setShowProfilePage(false);
-    setShowBookedCars(false);
-    setShowUploadForm(false);
-    setShowSettings(false);
-  };
-
-  const handleShowUploadForm = () => {
-    setShowUploadForm(true);
-    setShowOwnerCars(false);
-    setSelectedCar(null);
-    setShowSettings(false);
-    setShowBookedCars(false);
-    setShowSettings(false);
-  }; */
-
+  useEffect(() => {
+    // Check if the user is logged in based on stored data
+    const loggedInUser = localStorage.getItem('loggedUser');
+    if (loggedInUser) {
+      setIsLoggedIn(true);
+      fetchProfileData(loggedInUser); // Fetch profile data for the logged-in user
+    }
+  }, []);
   const handleBookedCarsClick = () => {
     setShowBookedCars(true);
     setSelectedCar(null);
@@ -149,109 +139,9 @@ const App = () => {
     setShowSettings(false);
   };
 
-
-
   return (
     <BrowserRouter>
-    <div>
-     {/* {!isLoggedIn ? (
-        <>
-          {showLoginForm && !showForgot ? (
-            <div className="login-form">
-              <h1>Login</h1>
-              <Login onLogin={handleLogin} />
-              <p>
-                Don't have an account? <button onClick={() => setShowLoginForm(false)}>Sign up</button>
-              </p>
-              <div onClick={handleForgot} className="forgot-container">
-                <p>Forgot Password?</p>
-              </div>
-            </div>
-          ) : (
-            <>
-              {showForgot ? (
-                <div>
-                <Forgot onBack={handleForgotLog} />
-                </div>
-              ) : (
-                <div className="signup-form">
-                  <h1>Sign Up</h1>
-                  <Signup onSignUp={handleSignup} />
-                  <p>
-                    Already have an account? <button onClick={() => setShowLoginForm(true)}>Login</button>
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </>
-      ) : (
-        <div>
-          {showProfilePage ? (
-            <div>
-              <Profile
-                user={user}
-                profileData={profileData}
-                isLoggedIn={isLoggedIn}
-                onBackClick={handleBackClick}
-              />
-            </div>
-          ) : (
-            <div>
-              {showOwnerCars ? (
-                selectedCar ? (
-                  <OwnerCarDetails
-                    car={selectedCar}
-                    user={user}
-                    onBackClick={handleBackClick}
-                    profileData={profileData}
-                  />
-                ) : (
-                  <OwnerCars
-                    user={user}
-                    onCarClick={handleCarClick}
-                    profileData={profileData}
-                    onShowUploadForm={handleShowUploadForm}
-                    showUploadForm={showUploadForm}
-                  />
-                )
-              ) : (
-                showBookedCars ? (
-                  <BookedCars
-                    onBackClick={handleBackClick}
-                    profileData={profileData}
-                    user={user}
-                  />
-                ) : (
-                  <UploadForm
-                    user={user}
-                    fetchProfileData={fetchProfileData}
-                    onBackClick={handleBackClick}
-                  />
-                )
-              )}
-
-              {showOwnerCars && (
-                <div className="settings-button" id="settings-button">
-                  <button onClick={() => setShowSettings(!showSettings)}>
-                    <img src={Setting} alt="Settings" />
-                  </button>
-                  {showSettings && (
-                    <Settings
-                      onLogout={handleLogout}
-                      onProfileClick={handleProfileClick}
-                      onBookedClick={handleBookedCarsClick}
-                      onDeleteAccount={() => handleDeleteAccount(user.email)}
-                      user={user}
-                      onUpload={() => setShowOwnerCars(false)}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-                  )}*/}
+              <div>
                  <div >
                  {isLoggedIn && (
                     <div className="settings-button" id="settings-button">
