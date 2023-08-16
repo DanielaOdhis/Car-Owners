@@ -54,6 +54,7 @@ export default function Signup({ onSignUp }) {
 
   return (
     <div>
+        <div className="background-container">
       <div className="signup-form">
         <h1>Sign Up</h1>
     <form onSubmit={handleFormSubmit}>
@@ -109,6 +110,7 @@ export default function Signup({ onSignUp }) {
         </p>
       </div>
     </form>
+    </div>
     </div>
     </div>
   );

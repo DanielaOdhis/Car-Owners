@@ -26,6 +26,7 @@ export default function Forgot() {
   };
 
   return (
+    <div className="background-container">
     <div className="forgot">
       <div className="forgot-container">
       <h1>Forgot Password</h1>
@@ -49,6 +50,7 @@ export default function Forgot() {
           <button type="submit">Submit</button>
         </form>
       )}
+    </div>
     </div>
     </div>
   );

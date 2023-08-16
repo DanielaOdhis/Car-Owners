@@ -85,15 +85,19 @@ export default function BookedCars() {
     }
   };
 
-  const deleteBookedCar = async (id) => {
+  const deleteBookedCar = async (booking) => {
+    if (!booking || !booking.bookedCar || !booking.bookedCar.id) {
+      console.error('Invalid booking data');
+      return;
+    }
+
     try {
-      const carToDelete = bookedCars.find((car) => car.id === id);
-
-      const response = await axios.delete(`http://localhost:3004/api/bookedCars/${carToDelete.book_details.id}`);
-
+      //const carToDelete = bookedCars.find((car) => car.id === booking.bookedCar.id);
+      const response = await axios.delete(`http://localhost:3004/api/bookedCars/${booking.bookedCar.id}`);
+      console.log("Res:", booking.bookedCar)
       if (response.status === 200) {
         try {
-          await axios.put(`http://localhost:3004/api/cars/${carToDelete.carDetails.Car_ID}`, {
+          await axios.put(`http://localhost:3004/api/cars/${booking.carDetails.Car_ID}`, {
             Rental_Status: 'Available',
           });
           console.log('Availability status updated successfully.');
@@ -130,7 +134,7 @@ export default function BookedCars() {
   const confirmCancel = () => {
     setShowConfirmation(false);
     if (selectedBooking) {
-      deleteBookedCar(selectedBooking.id);
+      deleteBookedCar(selectedBooking);
       setSelectedBooking(null);
     }
   };
@@ -368,7 +372,7 @@ export default function BookedCars() {
           )}
         </div>
       )}
-      <div>
+      <div className="top">
       <button onClick={handleBackClick}>Back</button>
       </div>
       {showConfirmation && (

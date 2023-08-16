@@ -53,6 +53,7 @@ export default function Logins({ onLogin }) {
   return (
     <div>
       {showLoginForm ? (
+        <div className="background-container">
         <div className="login-form">
           <h1>Login</h1>
           <form onSubmit={handleFormSubmit}>
@@ -93,6 +94,7 @@ export default function Logins({ onLogin }) {
               Don't have an account? <button onClick={handleSignup}>Sign up</button>
             </p>
           </div>
+        </div>
         </div>
       ) : (
         <div>
