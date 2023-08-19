@@ -75,8 +75,8 @@ const OwnerCars = () => {
             <h1>My Cars</h1>
             <div className="grid-container">
                 {availableCars.map((car, index) => (
-            <Link to={`/Car-Details?carId=${car.Car_ID}`} key={index} className="link">
           <div key={index} className="grid-item" onClick={()=>console.log("This ::",car)}>
+            <Link to={`/Car-Details?carId=${car.Car_ID}`} key={index} className="link">
             <h2>{car.Car_Type}</h2>
             <div className="triangles-container">
                 <div className="triangle triangle-1">
@@ -142,8 +142,8 @@ const OwnerCars = () => {
             <p>Availability Status: {car.Rental_Status}</p>
             <p>Price per Hour: {car.Charges_Per_Hour}$</p>
             </div>
+            </Link>
           </div>
-          </Link>
        ))}
        </div>
        </div>
