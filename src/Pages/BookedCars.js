@@ -323,8 +323,7 @@ export default function BookedCars() {
   }
 
   return (
-    <div>
-      <h1>Booked Cars</h1>
+    <div className="back">
       {loading ? (
         <div className="loading-container">
           <p className="loading-spinner">Loading...</p>
@@ -332,9 +331,12 @@ export default function BookedCars() {
       ) : (
         <div>
           {bookedCars.length > 0 ? (
-            <div className='booked-car-details'>
+            <div>
+              <h1>Booked Cars</h1>
               {bookedCars.map((booking) => (
+                <div className='booked-car-details'>
                 <div className='booked' key={booking.carDetails.Car_ID} >
+                  <div className="CarsB">
                   <h2>{booking.carDetails.Car_Type}</h2>
                   <div onClick={() => handleCancelClick(booking)}>
                     <img src={bufferToBase64(booking.carDetails.image)} alt={booking.carDetails.Car_Type} />
@@ -361,6 +363,8 @@ export default function BookedCars() {
                       )}
                     </div>
                   )}
+                   </div>
+                   </div>
                 </div>
               ))}
             </div>
@@ -370,12 +374,12 @@ export default function BookedCars() {
               <button onClick={handleBackClick}>Back</button>
             </div>
           )}
-        </div>
+          </div>
       )}
       <div className="top">
       <button onClick={handleBackClick}>Back</button>
       </div>
-      {showConfirmation && (
+      {showConfirmation && selectedBooking && selectedBooking.total_time < 0 &&(
         <div className="confirmation-modal">
           <p>You're about to cancel this order. Are you sure?</p>
           <button onClick={confirmCancel}>Confirm</button>

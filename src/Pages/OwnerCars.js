@@ -118,7 +118,7 @@ const OwnerCars = () => {
 </svg>
                   </div>
                   <div className="triangle triangle-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="500" height="350" viewBox="0 0 247 232" fill="none">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="500" height="340" viewBox="0 0 247 232" fill="none">
   <g filter="url(#filter0_d_1_11)">
     <path d="M40.5308 220.345C24.943 225.644 13.4376 205.597 25.8759 194.811L211.173 34.1244C220.885 25.7018 236 32.6009 236 45.4568V143.157C236 149.581 231.91 155.292 225.828 157.359L40.5308 220.345Z" fill="#9B8079"/>
   </g>

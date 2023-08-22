@@ -43,65 +43,82 @@ label {
 .error{
   color:red;
 }
-.signup-form,
-.login-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  max-width: 300px;
-  margin: 0 auto;
-  font-size: 16px;
-  margin-top: 50px;
-}
+
 .settings-button {
   position: fixed;
-  top: 10px;
+  top: 20px;
   right: 10px;
   display: flex;
   align-items: center;
+  z-index: 4;
 }
 
 .settings-button button {
   cursor: pointer;
-  background-color: transparent;
+  border-radius: 10px;
+  background: #000;
+  box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.25), 0px 6.909999847412109px 6.909999847412109px 0px #9B8079 inset, 0px -6.909999847412109px 6.909999847412109px 0px #000 inset;
   border: none;
+  padding: 10px 20px;
 }
 
 .settings-button img {
   width: 30px;
   height: 30px;
 }
+
 .settings-dropdown {
   position: absolute;
-  top: 50px;
-  right: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  top: 70px;
+  right: 0px;
+  border-radius: 15px;
+  background: linear-gradient(360deg,  #3d3d3b 99%, black );
+  box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.25), 0px 6.909999847412109px 6.909999847412109px 0px  #3d3d3b inset, 0px -6.909999847412109px 6.909999847412109px 0px #3d3d3b  inset;
   padding: 10px;
+  z-index: 4;
+  backdrop-filter: blur(10px);
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  -o-border-radius: 15px;
+
+  width: 198.798px;
+  flex-shrink: 0;
 }
 
 .settings-dropdown ul {
   list-style-type: none;
   margin: 0;
-  padding: 0;
-  z-index: 2;
+  padding: 0px;
+  text-align: center;
+  align-items: center;
 }
 
 .settings-dropdown li {
-  padding: 8px 16px;
   cursor: pointer;
+  color: #FFF;
+  font-family: Average;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  border-radius: 15px;
+  background: rgba(15, 0, 0, 0.5);
+    box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.25), 0px 6.909999847412109px 6.909999847412109px 0px  #000 inset, 0px -6.909999847412109px 6.909999847412109px 0px #000  inset;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  padding: 0px 5px 5px 12px;
+  gap: 14px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  -o-border-radius: 15px;
 }
 
 .settings-dropdown li:hover {
-  background-color: #f1f1f1;
+  background: rgba(0, 0, 0, 0.8);
 }
+
 button {
   align-items: center;
   margin: 5px;
@@ -130,8 +147,9 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: black;
+  color: white;
+  border: none;
   border-radius: 4px;
   padding: 20px;
   -webkit-transform: translate(-50%, -50%);
@@ -149,9 +167,6 @@ button:hover {
   color: white;
 }
 
-.delete-prompt button:hover{
-  background-color: tomato;
-}
 .profile{
   display: flex;
   flex-direction: column;
@@ -221,7 +236,7 @@ line-height: normal;
 
 .top {
   position: absolute;
-  top: 0;
+  top: 23px;
   left: 0;
 }
 .triangle{
@@ -246,7 +261,7 @@ flex-shrink: 0;
 .triangle-3 {
 flex-shrink: 0;
   top: 85px;
-  right: -67.2px;
+  right: -73.2px;
 }
 .available{
   top: 25px;
@@ -316,7 +331,7 @@ button{
   cursor: pointer;
   border-radius: 10px;
 background: #000;
-box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.65), 0px 6.909999847412109px 6.909999847412109px 0px #FFADA9 inset, 0px -6.909999847412109px 6.909999847412109px 0px #000 inset;
+box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.25), 0px 6.909999847412109px 6.909999847412109px 0px #9B8079 inset, 0px -6.909999847412109px 6.909999847412109px 0px #000 inset;
   border: none;
   padding: 10px 20px;
   color: #FFF;
@@ -336,7 +351,7 @@ box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.65),
 }
 
 button:hover{
-  background-color: tomato;
+  background-color: #9B8079;
 }
 
 .signup-form input,
@@ -381,6 +396,37 @@ input {
   color: #000;
 }
 
+.signup-form button,
+.login-form button,
+.forgot button{
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 10px;
+  background: #000;
+  box-shadow: 0px 19.93000030517578px 39.81999969482422px 0px rgba(0, 0, 0, 0.65), 0px 6.909999847412109px 6.909999847412109px 0px #FFADA9 inset, 0px -6.909999847412109px 6.909999847412109px 0px #000 inset;
+  border: none;
+  padding: 10px 20px;
+  color: #FFF;
+  text-align: center;
+  font-family: Average;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+}
+
+.signup-form button:hover,
+.login-form button:hover,
+.forgot button:hover{
+  background-color: tomato;
+}
 .selected-car-details {
   text-align: center;
   position: absolute;
@@ -418,47 +464,83 @@ input {
   width:300px;
   height:200px;
 }
+
+.CarsB{
+  border-radius: 20px;
+  background: rgba(155, 128, 121, 0.20);
+  box-shadow: -38.66666793823242px 38.66666793823242px 38.66666793823242px 0px rgba(155, 128, 121, 0.20) inset, 38.66666793823242px -38.66666793823242px 38.66666793823242px 0px rgba(155, 128, 121, 0.20) inset, 0px 6px 12px 0px rgba(155, 128, 121, 0.75);
+  backdrop-filter: blur(9.666666984558105px);
+}
+
+.back{
+  display: flex;
+  background: url('bg.jpg'), lightgray 50% / cover no-repeat;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: white;
+  position: absolute;
+  background-size: cover;
+  top: 0;
+}
+
 .booked-car-details{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   }
-  .booked{
-    text-align: center;
+
+ .booked {
+  text-align: center;
+  width: 450px;
   position: relative;
-  }
+  /*background: linear-gradient(180deg, #000 70.01%, #9B8079 100%);*/
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+}
+
+.booked img{
+  border-radius: 15px;
+  width: 400px;
+  border: 1px solid #ECD7D7;
+}
   .no-cars-message {
     font-size: 24px;
     font-family: "Arial", sans-serif;
   }
-.confirmation-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 20px;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-}
 
-.confirmation-modal-content {
-  width: 300px;
-  padding: 1.5rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
+  .confirmation-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: black;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    padding: 20px;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+  }
+
+  .confirmation-modal-content {
+    width: 300px;
+    padding: 1.5rem;
+    background-color: black;
+     color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 
 .confirmation-modal h2 {
   font-size: 1.5rem;
@@ -489,7 +571,6 @@ input {
   position: relative;
   }
 
-  
   .forgot button:hover {
     background-color: tomato;
   }
