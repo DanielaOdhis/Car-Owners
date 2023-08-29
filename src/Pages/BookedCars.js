@@ -60,6 +60,7 @@ export default function BookedCars() {
             isTimerRunning: false,
             elapsedTime: 0,
             intervalId: null,
+            paymentReceived: true,
            // totalBill: 0,
           };
 
@@ -253,8 +254,8 @@ export default function BookedCars() {
        setBookedCars(prevBookedCars =>
         prevBookedCars.map(prevBooking =>
           prevBooking.carDetails.Car_ID === booking.carDetails.Car_ID
-            ? { ...prevBooking, timerData: { ...booking.timerData, isTimerRunning: false } }
-            : prevBooking
+          ? { ...prevBooking, timerData: { ...booking.timerData, isTimerRunning: false }, paymentReceived: true }
+          : prevBooking
         )
       );
      // setElapsedTime(0);
@@ -351,6 +352,12 @@ export default function BookedCars() {
                   ) : (
                     <div>
                       <div id={`display-${booking.id}`}>{formatTimeInHours(booking.bookedCar.total_time*3600)}</div>
+                      {booking.paymentReceived ? (
+                       <button onClick={() => console.log("Payment received")}>Payment received</button>
+                       ) : (
+                       <div>
+                       </div>
+                       )}
                       {booking.timerData.isTimerRunning ? (
                         <div>
                           <button onClick={() => handleStopTimer(booking)}>Stop Timer</button>
@@ -363,6 +370,7 @@ export default function BookedCars() {
                       )}
                     </div>
                   )}
+                  
                    </div>
                    </div>
                 </div>

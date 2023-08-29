@@ -11,6 +11,7 @@ import UploadForm from './Pages/upload.js';
 import BookedCars from './Pages/BookedCars.js';
 import Forgot from './Pages/forgotPassword.js';
 import NotFound from './Pages/NotFound.js';
+import Chats from './Pages/chats.js';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -183,6 +184,7 @@ const App = () => {
                     user={user}
                     onBackClick={handleBackClick}
                   />} />
+                   <Route path="/chats" element={<Chats />} />
                     <Route path="*" element={<NotFound />} />
                     </Routes>
                   </div>

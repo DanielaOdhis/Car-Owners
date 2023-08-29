@@ -1,0 +1,24 @@
+[
+    {
+      "profile": "/dude.jpg",
+      "username": "Daniela",
+      "messages": [
+        { "senderId": 1, "message": "Ok let me simplify it💀😂" },
+        { "senderId": 2, "message": "sawasawa" },
+        { "senderId": 2, "message": "That too" },
+        { "senderId": 1, "message": "Cool" }
+      ],
+      "time": "7:11 am"
+    },
+    {
+      "profile": "/logo512.png",
+      "username": "John",
+      "messages": [
+        { "senderId": 1, "message": "Hey There!" },
+        { "senderId": 2, "message": "How you doing?" },
+        { "senderId": 1, "message": "Another message from John" },
+        { "senderId": 2, "message": "How have you been" }
+      ],
+      "time": "8:30 am"
+    }
+  ]

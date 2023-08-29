@@ -672,3 +672,150 @@ input {
 .loading-spinner::after {
   animation-delay: 0.2s;
 }
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.chat {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chat-content {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.username {
+  margin: 0;
+  font-weight: bold;
+}
+
+.message {
+  margin: 0;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.sent {
+  background-color: #DCF8C6;
+  align-self: flex-end;
+}
+
+.received {
+  background-color: #F0F0F0;
+  align-self: flex-start;
+}
+
+.time {
+  margin: 0;
+  color: #888;
+}
+
+.chat-list-container {
+  display: flex;
+}
+
+.chat-list {
+  flex: 1;
+  width: 30%;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+}
+
+.chat-list-content {
+  width: 70%;
+  background: url('bg.jpg'), lightgray 50% / cover no-repeat;
+  color: white;
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.clickable-message {
+  cursor: pointer;
+}
+
+.chat-message {
+  padding: 10px;
+  margin: 10px;
+  background-color: #222;
+  color: white;
+  border-radius: 5px;
+  max-width: 50%;
+}
+
+.S-sent {
+  align-self: flex-end;
+  right: 0;
+}
+
+.R-received {
+  align-self: flex-start;
+  left: 0;
+}
+
+.blurred {
+  filter: blur(5px);
+}
+
+.profile-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+}
+
+.profile-popup-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  z-index: 200;
+}
+
+.input-field {
+  background-color: #222;
+  width: 70%;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.input {
+  width: 70%;
+  padding: 8px;
+  border: none;
+  background-color: transparent;
+  color: white;
+  font-size: 14px;
+}
+
+.send-icon{
+  right: 0;
+}
