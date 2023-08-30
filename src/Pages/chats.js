@@ -51,6 +51,12 @@ const Chats = () => {
     }
   };
 
+  const handleInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSendClick();
+    }
+  };
+
   return (
     <div className="chat-list-container">
       <div className="chat-list">
@@ -105,7 +111,7 @@ const Chats = () => {
         ))}
         {showInputField && (
           <div className="input-field">
-            <input type="text" className="input"  value={inputText}  onChange={handleInputChange}/>
+            <input type="text" className="input"  value={inputText}  onChange={handleInputChange} onKeyPress={handleInputKeyPress}/>
            {inputText && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
