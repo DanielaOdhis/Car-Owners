@@ -819,3 +819,14 @@ input {
 .send-icon{
   right: 0;
 }
+
+.message-status {
+  font-size: 0.8em;
+  font-style: italic;
+  margin-right: -5px;
+}
+
+.message-time {
+  font-size: 0.8em;
+  font-style: italic;
+}

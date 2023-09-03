@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Chats = () => {
   const [chatData, setChatData] = useState([]);
@@ -7,10 +8,35 @@ const Chats = () => {
   const [showInputField, setShowInputField] = useState(false);
   const [inputText, setInputText] = useState("");
 
+  const userId = localStorage.getItem("loggedUser");
+  console.log("User Id:", userId);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+ // const user__Id = localStorage.getItem('user_Id');
+
+  const socket = new WebSocket("ws://localhost:9600/ws/{userId}");
+  // Connection opened
+  socket.onopen=(event)=>{console.log("connection successful",event);
+}
+ const clientID = "101a";
+ let recepientId = queryParams.get('user_Id');
+ console.log("Recipient ID:", recepientId);
+
+  socket.onmessage=(event) => {
+    console.log("Message from server: ", event.data);
+  };
+
   useEffect(() => {
     fetch('/chats.json')
       .then(response => response.json())
-      .then(data => setChatData(data))
+      .then(data => {
+        setChatData(data);
+        const userId = data.find(chat => chat.userId)?.userId;
+        if (userId) {
+          localStorage.setItem('user_Id', userId);
+        }
+      })
       .catch(error => console.error('Error fetching chat data:', error));
   }, []);
 
@@ -20,6 +46,7 @@ const Chats = () => {
         setShowProfilePopup(false);
         setSelectedProfileChats([]);
         setShowInputField(false);
+        navigate('/chats');
       }
     };
 
@@ -28,13 +55,15 @@ const Chats = () => {
     return () => {
       document.removeEventListener('keydown', handleEscapeKeyPress);
     };
-  }, []);
+  }, [navigate]);
 
-  const handleLastMessageClick = (profileChats) => {
-    setSelectedProfileChats(profileChats);
-    setShowInputField(true);
-    console.log("Chat Clicked");
-  };
+  const handleLastMessageClick = (Chats) => {
+    const profileChats = Chats.messages;
+     setSelectedProfileChats(profileChats);
+     setShowInputField(true);
+     console.log("Chat Clicked::" , profileChats);
+     navigate(`/chats?user_Id=${Chats.userId}`);
+   };
 
   const handleProfileClick = () => {
     setShowProfilePopup(!showProfilePopup);
@@ -78,13 +107,16 @@ const Chats = () => {
                 >
                   <span
                     className="clickable-message"
-                    onClick={() => handleLastMessageClick(chat.messages)}
+                    onClick={() => {
+    console.log('Message clicked-User Id:', chat.userId);
+    handleLastMessageClick(chat);
+  }}
                   >
                     {chat.messages[chat.messages.length - 1].message}
                   </span>
                 </p>
               </div>
-              <p className="time">{chat.time}</p>
+              <p className="time">{chat.messages[chat.messages.length - 1].time}</p>
             </div>
           </div>
         ))}
@@ -106,12 +138,28 @@ const Chats = () => {
         <h1>Let's Chat</h1>
         {selectedProfileChats.map((message, index) => (
           <div key={index} className={`chat-message ${message.senderId === 1 ? 'S-sent' : 'R-received'}`}>
-            {message.message}
-          </div>
+          <p>{message.message} </p>
+          <p className="message-status message-time">{message.status} {message.time}</p>
+        </div>
         ))}
         {showInputField && (
+          <div>
           <div className="input-field">
-            <input type="text" className="input"  value={inputText}  onChange={handleInputChange} onKeyPress={handleInputKeyPress}/>
+            <input type="text"
+            className="input"
+            value={inputText}
+            onChange={handleInputChange}
+            onKeyDown={(e)=>{ if(e.key === 'Enter'){if(e.target.value.trim() !==""){
+           // create a new message object
+        let message = {
+          recepientId: recepientId,
+          message: e.target.value.trim(),
+        };
+        // convert the message object to JSON and send it to the server
+        socket.send(JSON.stringify(message));
+          // socket.send(e.target.value.trim())};
+          e.target.value=""} } }} 
+          onKeyPress={handleInputKeyPress}/>
            {inputText && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -130,6 +178,7 @@ const Chats = () => {
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
               </svg>
             )}
+          </div>
           </div>
         )}
       </div>

@@ -34,7 +34,7 @@ export default function Settings({ onLogout, onProfileClick, onDeleteAccount, us
     onBookedClick();
   }
 
-  const handleChats=()=>{
+  const handleChats = () => {
     navigate('/chats');
   }
 
@@ -45,9 +45,9 @@ export default function Settings({ onLogout, onProfileClick, onDeleteAccount, us
           <li onClick={handleProfile}>Profile</li>
           <li onClick={handleUpload}>Upload Cars</li>
           <li onClick={handleBook}>Booked Cars</li>
+          <li onClick={handleChats}>Chats</li>
           <li onClick={logOut}>Log Out</li>
           <li onClick={handlePrompt}>Delete Account</li>
-          <li onClick={handleChats}>Chats</li>
         </ul>
       </div>
       {showPrompt && (
