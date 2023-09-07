@@ -1,0 +1,24 @@
+[
+  {
+    "profile": "/dude.jpg",
+    "username": "Daniela",
+    "userId":17,
+    "messages": [
+      { "senderId": 1, "message": "Ok let me simplify it💀😂" ,"status":"read","time":"7:11 am"},
+      { "senderId":17, "message": "sawasawa", "status":"read","time":"7:14 am" },
+      { "senderId": 17, "message": "That too", "status":"read","time":"7:14 am" },
+      { "senderId": 1, "message": "Cool", "status":"delivered","time":"7:21 am" }
+    ]
+  },
+  {
+    "profile": "/logo512.png",
+    "username": "John",
+    "userId":3,
+    "messages": [
+      { "senderId": 1, "message": "Hey There!", "status":"read","time":"8:11 am" },
+      { "senderId": 3, "message": "How you doing?", "status":"read","time":"8:11 am" },
+      { "senderId": 1, "message": "Great", "status":"read","time":"8:11 am" },
+      { "senderId": 3, "message": "How have you been?", "status":"read","time":"8:11 am" }
+    ]
+  }
+]
