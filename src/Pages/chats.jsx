@@ -22,8 +22,8 @@ const Chats = () => {
     .then(response => response.json())
     .then(data => {
       setChatData(data);
-      chatData=data;
-      console.log("Chats: ",chatData);
+      chat_data=data;
+      console.log("Chats: ",chat_data);
       const userIds = data.map(chat => chat.userId);
     console.log("UserIds:", userIds);
     setIds(userIds);
@@ -50,8 +50,6 @@ const Chats = () => {
     console.log("Message from server: ", event.data);
     const msg=JSON.parse(event.data);
     if ('message' in msg){
-    chatData.push(msg);
-    console.log("new chat data: ",chatData);
     console.log("alaaa", msg);
     }else{
       console.log("online status: ", msg)
