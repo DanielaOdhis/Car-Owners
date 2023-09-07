@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Chats = () => {
-  const [chatData, setChatData] = useState([]);
-  let chatData = [];
+  let chat_data = [];
   const [selectedProfileChats, setSelectedProfileChats] = useState([]);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showInputField, setShowInputField] = useState(false);
@@ -21,7 +20,6 @@ const Chats = () => {
   fetch('/chats.json')
     .then(response => response.json())
     .then(data => {
-      setChatData(data);
       chat_data=data;
       console.log("Chats: ",chat_data);
       const userIds = data.map(chat => chat.userId);
@@ -117,7 +115,7 @@ const Chats = () => {
     <div className="chat-list-container">
       <div className="chat-list">
 
-        {chatData.map((chat, index) => (
+        {chat_data.map((chat, index) => (
           <div className="chat" key={index}>
             <img
               src={chat.profile}
