@@ -742,9 +742,9 @@ input {
   background: #070707;
   color: white;
   padding: 20px;
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 .cht{
   border-radius: 30px 0px 0px 0px;
@@ -754,6 +754,7 @@ input {
   -moz-border-radius: 30px 0px 0px 0px;
   -ms-border-radius: 30px 0px 0px 0px;
   -o-border-radius: 30px 0px 0px 0px;
+  background-attachment: fixed;
 }
 .clickable-message {
   cursor: pointer;
@@ -846,14 +847,17 @@ box-shadow: 0px -6.91px 6.91px 0px rgba(0, 0, 0, 0.55) inset;
 .message-status {
   font-size: 0.8em;
   font-style: italic;
-  margin-right: -5px;
+  margin-right: -10px;
 }
 
 .message-time {
-  font-size: 0.8em;
+  font-size: 0.7em;
   font-style: italic;
 }
-
+.message-t{
+  font-size: 0.7em;
+  font-style: italic;
+}
 .me {
   display: flex;
   justify-content: flex-end;

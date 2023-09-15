@@ -4,10 +4,10 @@
     "username": "Daniela",
     "userId":17,
     "messages": [
-      { "senderId": 1, "message": "Ok let me simplify it💀😂" ,"status":"read","time":"7:11 am"},
-      { "senderId":17, "message": "sawasawa", "status":"read","time":"7:14 am" },
-      { "senderId": 17, "message": "That too", "status":"read","time":"7:14 am" },
-      { "senderId": 1, "message": "Cool", "status":"delivered","time":"7:21 am" }
+      { "senderId": 17, "message": "Ok let me simplify it💀😂" ,"status":"read","time":"7:11 am"},
+      { "senderId":1, "message": "sawasawa", "status":"read","time":"7:14 am" },
+      { "senderId": 1, "message": "That too", "status":"read","time":"7:14 am" },
+      { "senderId": 17, "message": "Cool", "status":"delivered","time":"7:21 am" }
     ]
   },
   {
