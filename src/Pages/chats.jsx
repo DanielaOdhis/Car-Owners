@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import {v4 as uuidv4} from 'uuid';
 
 const Chats = () => {
  // let chat_data = [];
@@ -9,6 +10,7 @@ const Chats = () => {
   const [showInputField, setShowInputField] = useState(false);
   const [inputText, setInputText] = useState("");
   const [Ids, setIds]=useState([]);
+  const [selectedChatUser, setSelectedChatUser] = useState(null);
 
   const userId = localStorage.getItem("loggedUser");
   console.log("User Id:", userId);
@@ -22,7 +24,7 @@ const Chats = () => {
     .then(response => response.json())
     .then(data => {
       chatDataRef.current = data;
-      let testMessage = {senderId:1, message:"broooo", "status":"delivered","time":"8:11 am"};
+      let testMessage = {senderId:"1", message:"broooo", "msg_id":"145645","status":"delivered","time":"8:11 am"};
        console.log("ChatDataRef: ", chatDataRef);
       console.log("Chats: ", chatDataRef.current[0].messages.push(testMessage));
       console.log("Chats: ", chatDataRef.current[0].messages);
@@ -53,10 +55,10 @@ const Chats = () => {
   console.log("Message from server: ", event.data);
   const msg=JSON.parse(event.data);
   if ('message' in msg){
-  console.log("alaaa", msg);
 const msgUpdate = {
-  senderId: msg.senderId,
   message: msg.message,
+  msg_id:msg.msg_id,
+  senderId: msg.senderId,
   time:new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: "2-digit", hour12: true }),
 };
 for (const chat in chatDataRef.current){
@@ -68,13 +70,44 @@ if(chatDataRef.current[chat].userId==recepientId){
 break;
 }
 }
-}else{
+}else if('onlineStatus' in msg){
   console.log("online status: ", msg)
-}
+  for (const chat in chatDataRef.current){
+    if(chatDataRef.current[chat].userId==msg.userId){
+      console.log("online_status Last update: ", msg.onlineStatus.last_updated);
+      chatDataRef.current[chat].online_status = msg.onlineStatus.status;
+    }
+  }
+}else if('msg_id' in msg){
+  console.log("message status: ",msg);
+    for (const chat in chatDataRef.current){
+      console.log("In the for loop now: ",chat);
+      console.log("Are we entering the second loop? ",chatDataRef.current[chat].userId==msg.recepient_id);
+   if(chatDataRef.current[chat].userId==msg.recepient_id){
+      console.log("Entering second loop");
+      console.log("All messages:",chatDataRef.current[chat].messages);
+   for (const message in chatDataRef.current[chat].messages){
+      console.log("The actual message",chatDataRef.current[chat].messages[message]);
+      console.log("Message id: ",chatDataRef.current[chat].messages[message].msg_id);
+      console.log('msg id ni: ',msg.msg_id);
+      console.log("Is this message the one we need to update?",message.msg_id == msg.msg_id)
+     if(chatDataRef.current[chat].messages[message].msg_id == msg.msg_id){
+       chatDataRef.current[chat].messages[message].status = msg.status;
+       console.log("in message id",chatDataRef.current[chat].messages[message].status)
+       console.log("MSG_ID::", msg.msg_id);
+       break;
+     }
+   }
+  break;
+ }
+ }
+ }else{
+   console.log("Weird message: " ,msg);
+ }
 event.preventDefault();
 };
 
-    useEffect(() => {
+useEffect(() => {
     const handleEscapeKeyPress = (e) => {
       if (e.key === 'Escape') {
         setShowProfilePopup(false);
@@ -98,8 +131,24 @@ event.preventDefault();
      setShowInputField(true);
      console.log("Chat Clicked::" , profileChats);
      navigate(`/chats?user_Id=${Chats.userId}`);
+     for (const chat in chatDataRef.current){
+      if(chatDataRef.current[chat].userId==recepientId){
+        for (const message in chatDataRef.current[chat].messages){
+          if(chatDataRef.current[chat].messages[message].status == 'delivered'){
+            const msg_status_update={
+              recepientId:recepientId,
+              msg_status:'read',
+              sender_id:chatDataRef.current[chat].messages[message].sender_id,
+              msg_id:chatDataRef.current[chat].messages[message].msg_id
+            }
+            socket.send(JSON.stringify(msg_status_update))
+          }
+        }
+      }
+    }
      setInputText("");
-   };
+     setSelectedChatUser({ username: Chats.username, online_status:Chats.online_status});
+   };
 
   const handleProfileClick = () => {
     setShowProfilePopup(!showProfilePopup);
@@ -118,24 +167,24 @@ event.preventDefault();
           senderId: userId,
            recepientId: recepientId,
            message: inputText.trim(),
+           msg_id:uuidv4(),
            status: 'sent',
          };
           console.log("Chat Data Ref:" ,chatDataRef)
-
+          console.log("UUIDVV", uuidv4);
          socket.send(JSON.stringify(message));
         let msgUpdate = {
-            senderId: message.senderId, "message": message.message, status:message.status,time:new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit", hour12: true })
+            senderId: message.senderId, message: message.message,msg_id:message.msg_id ,status:message.status,time:new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit", hour12: true })
         };
        for (const chat in chatDataRef.current){
         console.log("We got the chat", chat)
         if(chatDataRef.current[chat].userId==recepientId){
           chatDataRef.current[chat].messages.push(msgUpdate);
-          break;
           }
 }
        setInputText("");
-     }
-   }
+     }
+   }
 
    const handleInputKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -149,12 +198,22 @@ event.preventDefault();
 
         {chatDataRef.current.map((chat, index) => (
           <div className="chat" key={index}>
+
+            <div className="profile-info">
+            <div className="circle">
+        <svg width="30" height="30">
+        <circle cx="15" cy="15" r="8" fill={chat.online_status === true ? 'green'  : 'grey'} />
+        <circle cx="15" cy="15" r="10" fill="transparent" stroke="black" strokeWidth="2" />
+      </svg>
+        </div>
             <img
               src={chat.profile}
               alt="Profile"
               className="profile-image"
               onClick={handleProfileClick}
             />
+        </div>
+
             <div className="chat-content">
               <div className="chat-details">
                 <h3 className="username">{chat.username}</h3>
@@ -179,8 +238,8 @@ event.preventDefault();
         ))}
       </div>
 
-      <div className={`chat-list-content ${showProfilePopup ? 'blurred' : ''}`}>
-        {showProfilePopup && selectedProfileChats && (
+      <div className="chat-list-content" >
+        {/*showProfilePopup && selectedProfileChats && -- ${showProfilePopup ? 'blurred' : ''}--} (
           <div className="profile-popup-overlay" >
             <div className="profile-popup">
               <div className="profile-popup-content">
@@ -192,9 +251,15 @@ event.preventDefault();
               </div>
             </div>
           </div>
-        )}
+        )*/}
+
         <h1>Let's Chat</h1>
          <div className="cht">
+         {selectedChatUser && (
+  <div className="chat-header">
+      <div className="username-t">Chat with {selectedChatUser.username}</div>
+  </div>
+)}
         {selectedProfileChats.map((message, index) => (
           <div key={index} className={`chat-message ${message.senderId === userId ? 'S-sent' : 'R-received'}`}>
            <div className={message.senderId === userId ? "me" : "you"}>
@@ -225,12 +290,13 @@ event.preventDefault();
 </svg>
 <div className="circle-container">
 <svg width="30" height="30">
-        <circle cx="15" cy="15" r="8" fill={message.status === 'sent' ? 'orange' : message.status === 'delivered' ? 'green' : message.status === 'read' ? 'purple' : 'red'} />
+        <circle cx="15" cy="15" r="8" fill={message.status === 'sent' ? 'orange' : message.status == 'delivered' ? 'green' : message.status === 'read' ? 'purple' : 'red'} />
         <circle cx="15" cy="15" r="10" fill="transparent" stroke="grey" strokeWidth="2" />
       </svg>
     </div>
 </div>
   ) : (
+    <div>
     <svg xmlns="http://www.w3.org/2000/svg" width="210" height="87" viewBox="0 0 210 87" fill="none">
     <g filter="url(#filter0_i_14_88)">
       <path d="M0 15C0 6.71573 6.71573 0 15 0H195C203.284 0 210 6.71573 210 15V50.1575C210 58.4418 203.284 65.1575 195 65.1575H21.7818C16.582 65.1575 11.7531 67.8505 9.02038 72.2743L0 86.8767V15Z" fill="#4B4A48"/>
@@ -248,12 +314,13 @@ event.preventDefault();
       </filter>
     </defs>
     <text x="10" y="40" fill="white" text-wrap="wrap" >
-      {message.message}
+    <tspan x="10" dy="0"> {message.message}</tspan>
     </text>
     <text x="10" y="70" fill="white" className="message-time">
         {message.time}
       </text>
   </svg>
+    </div>
   )}
 </div>
 
