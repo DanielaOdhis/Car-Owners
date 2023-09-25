@@ -8,7 +8,7 @@
       { "senderId": 17, "msg_id":"145642", "message": "Ok let me simplify it💀😂" ,"status":"read","time":"7:11 am"},
       { "senderId":1,"msg_id":"783", "message": "sawasawa", "status":"read","time":"7:14 am" },
       { "senderId": 1, "msg_id":"1209","message": "That too", "status":"read","time":"7:14 am" },
-      { "senderId": 17,"msg_id":"3472", "message": "Cool", "status":"delivered","time":"7:21 am" }
+      { "senderId": 17,"msg_id":"3472", "message": "Cool", "status":"read","time":"7:21 am" }
     ]
   },
   {

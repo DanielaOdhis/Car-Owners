@@ -24,7 +24,7 @@ const Chats = () => {
     .then(response => response.json())
     .then(data => {
       chatDataRef.current = data;
-      let testMessage = {senderId:"1", message:"broooo", "msg_id":"145645","status":"delivered","time":"8:11 am"};
+      let testMessage = {senderId:"1", message:"broooo", "msg_id":"145645","status":"read","time":"8:11 am"};
        console.log("ChatDataRef: ", chatDataRef);
       console.log("Chats: ", chatDataRef.current[0].messages.push(testMessage));
       console.log("Chats: ", chatDataRef.current[0].messages);
@@ -132,19 +132,24 @@ useEffect(() => {
      console.log("Chat Clicked::" , profileChats);
      navigate(`/chats?user_Id=${Chats.userId}`);
      for (const chat in chatDataRef.current){
+      console.log("this should log once the chat is clicked")
       if(chatDataRef.current[chat].userId==recepientId){
+        console.log("found the correct chat");
         for (const message in chatDataRef.current[chat].messages){
-          if(chatDataRef.current[chat].messages[message].status == 'delivered'){
+    console.log("Current msg status",chatDataRef.current[chat].messages[message].status );     
+     if(chatDataRef.current[chat].messages[message].status == undefined){
+            console.log("the message is",chatDataRef.current[chat].messages[message]);
             const msg_status_update={
-              recepientId:recepientId,
+              recepientId: userId,
               msg_status:'read',
-              sender_id:chatDataRef.current[chat].messages[message].sender_id,
+              sender_id:recepientId,
               msg_id:chatDataRef.current[chat].messages[message].msg_id
             }
-            socket.send(JSON.stringify(msg_status_update))
-          }
-        }
-      }
+           console.log("status update: ",msg_status_update);
+socket.send(JSON.stringify(msg_status_update))
+          }
+        }
+      }
     }
      setInputText("");
      setSelectedChatUser({ username: Chats.username, online_status:Chats.online_status});
@@ -290,7 +295,7 @@ useEffect(() => {
 </svg>
 <div className="circle-container">
 <svg width="30" height="30">
-        <circle cx="15" cy="15" r="8" fill={message.status === 'sent' ? 'orange' : message.status == 'delivered' ? 'green' : message.status === 'read' ? 'purple' : 'red'} />
+        <circle cx="15" cy="15" r="8" fill={message.status === 'sent' ? 'orange' : message.status == 'delivered' ? 'green' : message.status == 'read' ? 'purple' : 'red'} />
         <circle cx="15" cy="15" r="10" fill="transparent" stroke="grey" strokeWidth="2" />
       </svg>
     </div>
