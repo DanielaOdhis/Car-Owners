@@ -711,6 +711,22 @@ input {
   font-size: 14px;
 }
 
+.m-message {
+  font-size: 14px;
+  max-width: 100%;
+  min-width: 20%;
+  overflow: hidden;
+ text-overflow: ellipsis;
+ height: 22px;
+}
+
+.c-message {
+  max-width: 100%; /* Set the maximum width of the container */
+  word-wrap: break-word; /* Allow text to wrap to the next line */
+  white-space: pre-line; /* Preserve line breaks in the text */
+  overflow-wrap:anywhere;
+}
+
 .sent {
   align-self: flex-end;
 }
@@ -720,7 +736,7 @@ input {
 }
 
 .time {
-  margin: 0;
+ /* margin: 0;*/
   color: #888;
 }
 
@@ -735,6 +751,9 @@ input {
   width: 30%;
   overflow-y: auto;
   border-right: 1px solid #ddd;
+  overflow-y: auto; /* Allow .chat-list to scroll */
+  /* Add a fixed height for scrolling */
+  max-height: 100vh;
 }
 
 .chat-list-content {
@@ -745,6 +764,8 @@ input {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 .cht{
   border-radius: 30px 0px 0px 0px;
@@ -755,6 +776,7 @@ input {
   -ms-border-radius: 30px 0px 0px 0px;
   -o-border-radius: 30px 0px 0px 0px;
   background-attachment: fixed;
+ 
 }
 .clickable-message {
   cursor: pointer;

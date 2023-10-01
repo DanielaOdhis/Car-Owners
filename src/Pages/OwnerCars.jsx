@@ -8,9 +8,10 @@ const OwnerCars = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate=useNavigate();
   const userId=localStorage.getItem("loggedUser");
+  //e.preventDefault()
 
   useEffect(() => {
-    const fetchOwnerCars = async () => {
+    const fetchOwnerCars = async (e) => {
       try {
         const response = await axios.get(`http://localhost:3004/api/cars/${userId}`, {
           headers: {
@@ -27,6 +28,7 @@ const OwnerCars = () => {
       } finally {
         setIsLoading(false);
       }
+     // e.preventDefault();
     };
 
     fetchOwnerCars();

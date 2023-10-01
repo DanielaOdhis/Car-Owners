@@ -14,7 +14,7 @@ export default function Update() {
 
   const userId = localStorage.getItem('loggedUser');
 
-  useEffect(() => {
+  useEffect((e) => {
     axios
       .get(`http://localhost:3004/api/ownerDetails/${userId}`)
       .then((response) => {
@@ -30,10 +30,11 @@ export default function Update() {
       .catch((error) => {
         console.error('Error fetching profile data:', error);
       });
+  //    e.preventDefault();
   }, [userId]);
 
   const handleUpdateClick = async (e) => {
-    e.preventDefault();
+   // e.preventDefault();
     if (!username || !password || !email || !firstName || !lastName || !phoneNumber) {
       setErrorMessage('Please fill in all fields.');
       return;

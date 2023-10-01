@@ -23,11 +23,13 @@ const navigate=useNavigate();
     } else {
       setCarData({ ...carData, [event.target.name]: event.target.value });
     }
+    //event.preventDefault();
   };
 
   const handleUploadProgress = (progressEvent) => {
     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
     setUploadProgress(percentCompleted);
+   // progressEvent.preventDefault();
   };
 
   const handleImageLoad = () => {
@@ -35,7 +37,7 @@ const navigate=useNavigate();
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
 
     if (
       !carData.Car_Type ||
@@ -95,7 +97,7 @@ const navigate=useNavigate();
     }
   };
 
-  useEffect(() => {
+  useEffect((e) => {
     const fetchOwnerID = async () => {
       try {
         const response = await axios.get(`http://localhost:3004/api/ownerDetails/${user.email}`, {
@@ -114,7 +116,7 @@ const navigate=useNavigate();
         console.error('Error fetching owner ID:', error);
       }
     };
-
+   // e.preventDefault();
     fetchOwnerID();
   }, [user]);
 

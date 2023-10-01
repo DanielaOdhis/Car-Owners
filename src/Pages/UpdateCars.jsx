@@ -18,20 +18,22 @@ const UpdateCars = () => {
   const location=useLocation().search;
   const carId= new URLSearchParams(location).get("carId");
 
-  const fetchOwnerCars = async () => {
+  const fetchOwnerCars = async (e) => {
     try {
       const response = await axios.get(`http://localhost:3004/api/cars/${carId}`);
       setCar(response.data[0]);
     } catch (error) {
       console.error('Error fetching owner cars:', error);
     }
+    //e.preventDefault();
   };
 
-  useEffect(() => {
+  useEffect((e) => {
     fetchOwnerCars();
+   // e.preventDefault();
   }, [carId]);
 
-  useEffect(() => {
+  useEffect((e) => {
     if (car) {
       setCarData({
         Car_ID: car.Car_ID,
@@ -40,7 +42,8 @@ const UpdateCars = () => {
         Charges_Per_Hour: car.Charges_Per_Hour,
         Rental_Status: car.Rental_Status,
       });
-    }
+    };
+    //e.preventDefault();
   }, [ car]);
 
   const handleChange = (event) => {
@@ -49,11 +52,13 @@ const UpdateCars = () => {
     } else {
       setCarData({ ...carData, [event.target.name]: event.target.value });
     }
+    //event.preventDefault();
   };
 
   const handleUploadProgress = (progressEvent) => {
     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
     setUploadProgress(percentCompleted);
+    //progressEvent.preventDefault();
   };
 
   const handleImageLoad = () => {
@@ -61,7 +66,7 @@ const UpdateCars = () => {
   };
 
   const handleImage = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
 
     if (!carData.image) {
       setErrorMessage('Please upload an image');
@@ -88,7 +93,7 @@ const UpdateCars = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
 
     if (
       !carData.Car_ID ||

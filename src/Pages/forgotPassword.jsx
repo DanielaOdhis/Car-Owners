@@ -9,7 +9,6 @@ export default function Forgot() {
   const navigate=useNavigate();
 
   const handleSubmit = (e) => {
-    e.preventDefault();
 
     if (!email) {
       setError('Please enter your email.');
@@ -19,6 +18,7 @@ export default function Forgot() {
 
     setEmail('');
     setError('');
+    e.preventDefault();
   };
 
   const handleLoginClick = () => {

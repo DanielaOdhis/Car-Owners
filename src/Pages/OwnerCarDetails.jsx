@@ -12,16 +12,17 @@ const OwnerCarDetails = ({ user, onBackClick, fetchCarDetails }) => {
   const location=useLocation().search;
   const carId= new URLSearchParams(location).get("carId");
 
-  const fetchOwnerCars = async () => {
+  const fetchOwnerCars = async (e) => {
     try {
       const response = await axios.get(`http://localhost:3004/api/cars/${carId}`);
       setCar(response.data[0]);
     } catch (error) {
       console.error('Error fetching owner cars:', error);
     }
+    //e.preventDefault();
   };
 
-  const fetchOwnerDetails = async () => {
+  const fetchOwnerDetails = async (e) => {
     try {
       const response = await axios.get(`http://localhost:3004/api/ownerDetails/${userId}`, {
         headers: {
@@ -35,6 +36,7 @@ const OwnerCarDetails = ({ user, onBackClick, fetchCarDetails }) => {
     } catch (error) {
       console.error('Error fetching owner details:', error);
     }
+    //e.preventDefault();
   };
 
   useEffect(() => {
@@ -42,13 +44,14 @@ const OwnerCarDetails = ({ user, onBackClick, fetchCarDetails }) => {
     fetchOwnerCars();
   }, );
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
     try {
       await axios.delete(`http://localhost:3004/api/cars/${carId}`);
       fetchCarDetails();
     } catch (error) {
       console.error('Error deleting car:', error);
     }
+    //e.preventDefault();
   };
 
   const bufferToBase64 = (buffer) => {

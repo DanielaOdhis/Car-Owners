@@ -8,13 +8,14 @@ export default function Profile({ onBackClick }) {
   const navigate = useNavigate();
   const userId = localStorage.getItem("loggedUser");
 
-  const handleBackClick = () => {
+  const handleBackClick = (e) => {
     onBackClick();
     navigate('/My-Cars');
     localStorage.removeItem('profileData');
+   // e.preventDefault();
   }
 
-  useEffect(() => {
+  useEffect((e) => {
     axios.get(`http://localhost:3004/api/ownerDetails/${userId}`)
       .then(response => {
         setProfileData(response.data);
@@ -23,6 +24,7 @@ export default function Profile({ onBackClick }) {
       .catch(error => {
         console.error('Error fetching profile data:', error);
       });
+     // e.preventDefault();
   }, [userId]);
 
   return (
